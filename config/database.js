@@ -7,7 +7,7 @@ const pool = mysql.createPool({
   user: "root",
   port: "3306",
   password: "su3081802!",
-  database: "capstone",
+  database: "opshop",
 });
 
 module.exports = {
