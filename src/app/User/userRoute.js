@@ -4,20 +4,11 @@ module.exports = function (app) {
   const jwtMiddleware = require("../../../config/jwtMiddleware");
 
   // 1. 유저 생성 (회원가입) API
-  app.post("/app/users", user.postUsers);
-
-  // 3. 특정 유저 조회 API
-  app.get("/app/users/:userId", user.getUserById);
+  app.post("/opshop/join", user.postUsers);
 
   // 로그인 하기 API (JWT 생성)
-  app.post("/app/login", user.login);
+  app.post("/opshop/login", user.login);
 
-  // 회원 정보 수정 API (JWT 검증 및 Validation - 메소드 체이닝 방식으로 jwtMiddleware 사용)
-  //app.patch("/app/users/:userId", jwtMiddleware, user.patchUsers);
+  //마이페이지
+  app.get("/opshop/mypage", jwtMiddleware, user.getMypage);
 };
-
-// TODO: 자동로그인 API (JWT 검증 및 Payload 내뱉기)
-// JWT 검증 API
-// app.get('/app/auto-login', jwtMiddleware, user.check);
-
-// TODO: 탈퇴하기 API
