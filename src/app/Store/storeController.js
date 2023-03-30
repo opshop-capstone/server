@@ -15,3 +15,18 @@ exports.getStoreProducts = async function (req, res) {
   const storeProducts = await storeProvider.getStoreProducts(storeId);
   return res.send(response(baseResponse.SUCCESS, storeProducts));
 };
+
+/**
+ * 스토어의 리뷰
+ */
+exports.getStoreReviews = async function (req, res) {
+  const storeId = req.params.storeId;
+  const storeReviews = await storeProvider.getStoreReviews(storeId);
+  const storeReviewsScore = await storeProvider.getStoreReviewsScore(storeId);
+  return res.send(
+    response(baseResponse.SUCCESS, {
+      total_score: storeReviewsScore,
+      detail: storeReviews,
+    })
+  );
+};
