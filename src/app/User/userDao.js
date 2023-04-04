@@ -59,10 +59,49 @@ async function selectMypage(connection, userId) {
   return selectUserPageRow[0];
 }
 
+async function insertOrders(connection, [userId, total_price, address_id]) {
+  const insertOrdersQuery = `
+      -- 상품 주문
+      insert into Orders (user_id,total_price,address_id) values (?,?,?);
+       `;
+  const insertOrdersRow = await connection.query(insertOrdersQuery, [
+    userId,
+    total_price,
+    address_id,
+  ]);
+  return insertOrdersRow[0];
+}
+
+async function insertOrderItems(connection, [orderId, itemId, item_price]) {
+  const insertOrderItemsQuery = `
+      -- 상품 아이템 삽입
+      insert into OrderItem(order_id,product_id,price,status) values (?,?,?,'COMPLETE');`;
+  const insertOrderItemsRow = await connection.query(insertOrderItemsQuery, [
+    orderId,
+    itemId,
+    item_price,
+  ]);
+  return insertOrderItemsRow[0];
+}
+
+async function checkItemStatus(connection, itemId) {
+  const checkItemStatusQuery = `
+      -- 상품 상태 체크
+      select itemId
+      from Product
+      where status='ACTIVE' and id=?`;
+  const checkItemStatusRow = await connection.query(checkItemStatusQuery, [
+    itemId,
+  ]);
+  return checkItemStatusRow[0];
+}
 module.exports = {
   selectUserEmail,
   insertUserInfo,
   selectUserPassword,
   selectUserAccount,
   selectMypage,
+  insertOrders,
+  insertOrderItems,
+  checkItemStatus,
 };

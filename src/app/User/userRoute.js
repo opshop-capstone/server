@@ -11,4 +11,10 @@ module.exports = function (app) {
 
   //마이페이지
   app.get("/opshop/mypage", jwtMiddleware, user.getMypage);
+
+  // 대출 결제 준비
+  app.post("/opshop/payment", jwtMiddleware, user.payment);
+
+  // 대출 결제 승인 요청
+  app.get("/opshop/payment/approve", user.payment_success);
 };

@@ -122,3 +122,61 @@ exports.editUser = async function (id, nickname) {
     return errResponse(baseResponse.DB_ERROR);
   }
 };
+
+exports.insertOrderResult = async function (
+  userId,
+  itemId,
+  addressId,
+  total_price,
+  quantity,
+  item_price
+) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    connection.beginTransaction();
+
+    items = itemId.split(",");
+    each_price = item_price.split(",");
+
+    // 주문하려는 상품중에 품절상품 체크 벨리데이션
+    for (let i = 0; i < quantity; i++) {
+      const checkItemStatus = await userDao.checkItemStatus(
+        connection,
+        items[i]
+      );
+      if (checkItemStatus.length == 0) {
+        return errResponse({
+          isSuccess: false,
+          code: 8001,
+          message:
+            "품절된 상품이 존재합니다. 상품확인 후 주문을 다시 진행해주세요",
+        });
+      }
+    }
+
+    const insertOrders = await userDao.insertOrders(connection, [
+      userId,
+      total_price,
+      addressId,
+    ]);
+
+    const orderId = insertOrders.insertId;
+    for (let i = 0; i < quantity; i++) {
+      const insertOrdersItem = await userDao.insertOrderItems(connection, [
+        orderId,
+        items[i],
+        each_price[i],
+      ]);
+    }
+
+    connection.commit();
+
+    return response(baseResponse.SUCCESS);
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - insertOrder Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};

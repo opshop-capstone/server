@@ -6,4 +6,10 @@ module.exports = function (app) {
   app.get("/opshop/stores/:storeId", store.getStoreProducts);
 
   app.get("/opshop/stores/:storeId/reviews", store.getStoreReviews);
+  app.get("/opshop/stores/:storeId/info", store.getStoreInfo);
+  app.post(
+    "/opshop/stores/:storeId/reviews",
+    jwtMiddleware,
+    store.postStoreReview
+  );
 };

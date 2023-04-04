@@ -35,3 +35,10 @@ exports.getStoreReviewsScore = async function (storeId) {
   connection.release();
   return storeReviewsScoreResult[0];
 };
+
+exports.getStoreInfo = async function (storeId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const storeInfo = await storeDao.selectStoreInfo(connection, storeId);
+  connection.release();
+  return storeInfo[0];
+};

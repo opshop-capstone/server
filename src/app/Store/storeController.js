@@ -30,3 +30,43 @@ exports.getStoreReviews = async function (req, res) {
     })
   );
 };
+
+/**
+ * 스토어의 정보
+ */
+exports.getStoreInfo = async function (req, res) {
+  const storeId = req.params.storeId;
+  const storeInfo = await storeProvider.getStoreInfo(storeId);
+  return res.send(response(baseResponse.SUCCESS, storeInfo));
+};
+
+/**
+ * 스토어의 리뷰 작성
+ */
+exports.postStoreReview = async function (req, res) {
+  const storeId = req.params.storeId;
+  const userId = req.verifiedToken.userId;
+  const content = req.body.content;
+  const score = req.body.score;
+  const imageUrl = req.body.imageUrl;
+
+  if (!content) {
+    return res.send(
+      response({ isSuccess: false, code: 800, message: "본문을 작성해주세요." })
+    );
+  }
+  if (!score)
+    return res.send(
+      response({ isSuccess: false, code: 801, message: "별점을 작성해주세요." })
+    );
+
+  const writeReview = await storeService.postStoreReview(
+    userId,
+    content,
+    score,
+    imageUrl,
+    storeId
+  );
+
+  return res.send(writeReview);
+};

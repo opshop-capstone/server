@@ -11,34 +11,33 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { connect } = require("http2");
 
-// Service: Create, Update, Delete 비즈니스 로직 처리
+exports.postStoreReview = async function (
+  userId,
+  content,
+  score,
+  imageUrl,
+  storeId
+) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    connection.beginTransaction();
 
-// exports.createstore = async function (email, password, nickname) {
-//   try {
-//     // 이메일 중복 확인
-//     const emailRows = await storeProvider.emailCheck(email);
-//     if (emailRows.length > 0)
-//       return errResponse(baseResponse.SIGNUP_REDUNDANT_EMAIL);
+    const insertStoreReview = await storeDao.insertReview(connection, [
+      userId,
+      content,
+      Number(score),
+      imageUrl,
+      storeId,
+    ]);
 
-//     // 비밀번호 암호화
-//     const hashedPassword = await crypto
-//       .createHash("sha512")
-//       .update(password)
-//       .digest("hex");
+    connection.commit();
 
-//     const insertstoreInfoParams = [email, hashedPassword, nickname];
-
-//     const connection = await pool.getConnection(async (conn) => conn);
-
-//     const storeIdResult = await storeDao.insertstoreInfo(
-//       connection,
-//       insertstoreInfoParams
-//     );
-//     console.log(`추가된 회원 : ${storeIdResult[0].insertId}`);
-//     connection.release();
-//     return response(baseResponse.SUCCESS);
-//   } catch (err) {
-//     logger.error(`App - createstore Service error\n: ${err.message}`);
-//     return errResponse(baseResponse.DB_ERROR);
-//   }
-//};
+    return response(baseResponse.SUCCESS);
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - insertStoreReview Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
