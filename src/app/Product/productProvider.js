@@ -43,13 +43,38 @@ exports.getCategoryPage = async function () {
 exports.getSearchProducts = async function (search) {
   const searchParams = "%" + search + "%";
   const connection = await pool.getConnection(async (conn) => conn);
-  const categoryPageResultList = await productDao.selectSearchProducts(
+  const searchProductsResultList = await productDao.selectSearchProducts(
     connection,
     searchParams
   );
   connection.release();
 
-  return categoryPageResultList;
+  return searchProductsResultList;
+};
+
+exports.getProductsByCategory = async function (categoryId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const productsByCategoryList = await productDao.selectProductsByCategory(
+    connection,
+    categoryId
+  );
+  connection.release();
+
+  return productsByCategoryList;
+};
+
+exports.getProductsByCategoryAndSearch = async function (categoryId, search) {
+  const searchParams = "%" + search + "%";
+  const connection = await pool.getConnection(async (conn) => conn);
+  const bothProductsResultList =
+    await productDao.selectProductsByCategoryAndSearch(
+      connection,
+      categoryId,
+      searchParams
+    );
+  connection.release();
+
+  return bothProductsResultList;
 };
 
 exports.checkLiked = async function (userId, productId) {

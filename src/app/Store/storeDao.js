@@ -71,10 +71,50 @@ async function insertReview(
   return insertReviewRow[0];
 }
 
+async function checkSubscribe(connection, userId, storeId) {
+  const checkSubscribeQuery = `
+        -- 구독 되어있는지 체크
+      select id
+      from LikedStore
+      where user_id=? and store_id = ? and status='ACTIVE';
+  `;
+  const checkSubscribeRow = await connection.query(checkSubscribeQuery, [
+    userId,
+    storeId,
+  ]);
+  return checkSubscribeRow[0];
+}
+
+async function deleteSubscribe(connection, userId, storeId) {
+  const deleteSubscribeQuery = `
+      -- 구독 취소
+      delete from LikedStore where user_id=? and store_id=?;
+  `;
+  const deleteSubscribeRow = await connection.query(deleteSubscribeQuery, [
+    userId,
+    storeId,
+  ]);
+  return deleteSubscribeRow[0];
+}
+
+async function insertSubscribe(connection, userId, storeId) {
+  const insertSubscribeQuery = `
+        -- 구독 하기
+        insert into LikedStore (user_id,store_id) values (?,?);;
+  `;
+  const insertSubscribeRow = await connection.query(insertSubscribeQuery, [
+    userId,
+    storeId,
+  ]);
+  return insertSubscribeRow[0];
+}
 module.exports = {
   selectStoreProducts,
   selectStoreReviews,
   selectStoreReviewsScore,
   selectStoreInfo,
   insertReview,
+  checkSubscribe,
+  deleteSubscribe,
+  insertSubscribe,
 };

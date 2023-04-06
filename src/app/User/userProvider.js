@@ -37,6 +37,40 @@ exports.getMypage = async function (userId) {
   return mypageResult;
 };
 
+exports.getLikedList = async function (userId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const likedListResult = await userDao.selectLikedList(connection, userId);
+  connection.release();
+  return likedListResult;
+};
+
+exports.getSubscribeList = async function (userId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const subscribeListResult = await userDao.selectSubscribeList(
+    connection,
+    userId
+  );
+  connection.release();
+  return subscribeListResult;
+};
+
+exports.getMyReviewList = async function (userId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const myReviewList = await userDao.selectMyReviewList(connection, userId);
+  connection.release();
+  return myReviewList;
+};
+
+exports.getMyDetailReview = async function (reviewId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const myDetailReview = await userDao.selectMyDetailReview(
+    connection,
+    reviewId
+  );
+  connection.release();
+  return myDetailReview;
+};
+
 exports.getMyAddress = async function (userId) {
   const connection = await pool.getConnection(async (conn) => conn);
   const userAddressResult = await userDao.selectUserAddress(connection, userId);

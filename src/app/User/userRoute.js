@@ -12,6 +12,15 @@ module.exports = function (app) {
   //마이페이지
   app.get("/opshop/mypage", jwtMiddleware, user.getMypage);
 
+  //좋아요 상품 목록
+  app.get("/opshop/mypage/liked", jwtMiddleware, user.getLikedList);
+
+  //구독한 상점 목록
+  app.get("/opshop/mypage/subscribed", jwtMiddleware, user.getSubscribeList);
+
+  //내가 작성한 후기 목록
+  app.get("/opshop/mypage/reviews", jwtMiddleware, user.getMyReviewList);
+
   // 대출 결제 준비
   app.post("/opshop/payment", jwtMiddleware, user.payment);
 

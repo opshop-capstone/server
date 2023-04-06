@@ -32,7 +32,8 @@ exports.getCategoryPage = async function (req, res) {
  */
 exports.getSearchProducts = async function (req, res) {
   const search = req.query.search;
-  if (!search) {
+  const categoryId = req.query.categoryId;
+  if (!search && !categoryId) {
     return res.send(
       response({
         isSuccess: false,
@@ -40,16 +41,28 @@ exports.getSearchProducts = async function (req, res) {
         message: "검색어를 입력해주세요.",
       })
     );
+  } else if (search && !categoryId) {
+    const searchProducts = await productProvider.getSearchProducts(search);
+    return res.send(response(baseResponse.SUCCESS, searchProducts));
+  } else if (!search && categoryId) {
+    const categoryProducts = await productProvider.getProductsByCategory(
+      categoryId
+    );
+    return res.send(response(baseResponse.SUCCESS, categoryProducts));
+  } else {
+    const bothProducts = await productProvider.getProductsByCategoryAndSearch(
+      categoryId,
+      search
+    );
+    return res.send(response(baseResponse.SUCCESS, bothProducts));
   }
-  const searchProducts = await productProvider.getSearchProducts(search);
-  return res.send(response(baseResponse.SUCCESS, searchProducts));
 };
 
 /**
- * 상품 좋아요
+ * 상품 좋아요&취소
  */
 exports.postLiked = async function (req, res) {
-  const productId = req.params.productId;
+  const productId = req.query.productId;
   const userId = req.verifiedToken.userId;
   if (!productId) {
     return res.send(

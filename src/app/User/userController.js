@@ -110,6 +110,46 @@ exports.postMyAddress = async function (req, res) {
   return res.send(setMyAddress);
 };
 
+/**
+ * 좋아요 상품 목록 조회
+ */
+exports.getLikedList = async function (req, res) {
+  const userId = req.verifiedToken.userId;
+
+  const getLikedList = await userProvider.getLikedList(userId);
+
+  return res.send(response(baseResponse.SUCCESS, getLikedList));
+};
+
+/**
+ * 구독 상점 목록 조회
+ */
+exports.getSubscribeList = async function (req, res) {
+  const userId = req.verifiedToken.userId;
+
+  const getSubscribeList = await userProvider.getSubscribeList(userId);
+
+  return res.send(response(baseResponse.SUCCESS, getSubscribeList));
+};
+
+/**
+ * 내가 작성한 리뷰 목록+ 상세 리뷰
+ */
+exports.getMyReviewList = async function (req, res) {
+  const userId = req.verifiedToken.userId;
+  const reviewId = req.query.reviewId;
+
+  if (!reviewId) {
+    const getMyReviewList = await userProvider.getMyReviewList(userId);
+    return res.send(response(baseResponse.SUCCESS, getMyReviewList));
+  } else {
+    const getMyDetailReview = await userProvider.getMyDetailReview(reviewId);
+    return res.send(response(baseResponse.SUCCESS, getMyDetailReview));
+  }
+
+  return;
+};
+
 // 대출 결제
 let tid;
 let userId, itemId, addressId, total_price, quantity, item_price;

@@ -7,9 +7,6 @@ module.exports = function (app) {
   app.get("/opshop/categorys", product.getCategoryPage);
 
   app.get("/opshop/products", product.getSearchProducts);
-  app.post(
-    "/opshop/products/:productId/liked",
-    jwtMiddleware,
-    product.postLiked
-  );
+
+  app.post("/opshop/products/liked", jwtMiddleware, product.postLiked);
 };

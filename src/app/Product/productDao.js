@@ -57,6 +57,42 @@ async function selectSearchProducts(connection, searchParams) {
   return selectSearchProductsRow[0];
 }
 
+async function selectProductsByCategory(connection, categoryId) {
+  const selectProductsByCategoryQuery = `
+      -- 카테고리별 상품 리스트
+      select  S.id as store_id,S.store_name ,P.id as product_id , P.title, round(P.price ,0) as price,PI.url as product_thumbnail ,C.id as category_id,C.name as category
+      from Store S join Product P on S.id = P.store_id join ProductImage PI on P.id = PI.product_id join Category C on P.category_id = C.id
+      where C.id=? and S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES' and PI.status='ACTIVE'
+      ;
+  
+        `;
+  const selectProductsByCategoryRow = await connection.query(
+    selectProductsByCategoryQuery,
+    categoryId
+  );
+  return selectProductsByCategoryRow[0];
+}
+
+async function selectProductsByCategoryAndSearch(
+  connection,
+  categoryId,
+  searchParams
+) {
+  const selectProductsByCategoryAndSearchQuery = `
+      -- 카테고리별 검색 상품 리스트
+      select S.id as store_id,S.store_name ,P.id as product_id , P.title, round(P.price ,0) as price,PI.url as product_thumbnail ,C.id as category_id,C.name as category
+      from Store S join Product P on S.id = P.store_id join ProductImage PI on P.id = PI.product_id join Category C on C.id = P.category_id
+      where C.id=? and (P.title like ? or P.content like ?)  and S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES' and PI.status='ACTIVE'
+      ;
+  
+        `;
+  const selectProductsByCategoryAndSearchRow = await connection.query(
+    selectProductsByCategoryAndSearchQuery,
+    [categoryId, searchParams, searchParams]
+  );
+  return selectProductsByCategoryAndSearchRow[0];
+}
+
 async function insertLiked(connection, userId, productId) {
   const insertLikedQuery = `
       -- 상품 좋아요
@@ -102,4 +138,6 @@ module.exports = {
   insertLiked,
   checkLiked,
   deleteLiked,
+  selectProductsByCategory,
+  selectProductsByCategoryAndSearch,
 };

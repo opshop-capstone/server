@@ -24,14 +24,11 @@ exports.postLiked = async function (userId, productId) {
         productId
       );
       connection.commit();
-      return response(
-        {
-          isSuccess: true,
-          code: 1000,
-          message: "좋아요 제거 성공",
-        },
-        deleteLiked
-      );
+      return response({
+        isSuccess: true,
+        code: 1000,
+        message: "좋아요 제거 성공",
+      });
     } else {
       const insertLiked = await productDao.insertLiked(
         connection,

@@ -70,3 +70,26 @@ exports.postStoreReview = async function (req, res) {
 
   return res.send(writeReview);
 };
+
+/**
+ * 스토어 구독
+ */
+exports.postSubscribe = async function (req, res) {
+  const storeId = req.query.storeId;
+  const userId = req.verifiedToken.userId;
+  if (!storeId) {
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 802,
+        message: "상점ID를 입력해주세요.",
+      })
+    );
+  } else {
+    const storeSubscribe = await storeService.postStoreSubscribe(
+      userId,
+      storeId
+    );
+    return res.send(storeSubscribe);
+  }
+};
