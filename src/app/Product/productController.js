@@ -26,3 +26,41 @@ exports.getCategoryPage = async function (req, res) {
   const categoryPage = await productProvider.getCategoryPage();
   return res.send(response(baseResponse.SUCCESS, categoryPage));
 };
+
+/**
+ * 검색 상품 페이지
+ */
+exports.getSearchProducts = async function (req, res) {
+  const search = req.query.search;
+  if (!search) {
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 301,
+        message: "검색어를 입력해주세요.",
+      })
+    );
+  }
+  const searchProducts = await productProvider.getSearchProducts(search);
+  return res.send(response(baseResponse.SUCCESS, searchProducts));
+};
+
+/**
+ * 상품 좋아요
+ */
+exports.postLiked = async function (req, res) {
+  const productId = req.params.productId;
+  const userId = req.verifiedToken.userId;
+  if (!productId) {
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 302,
+        message: "상품 ID 입력해주세요.",
+      })
+    );
+  }
+
+  const LikedProduct = await productService.postLiked(userId, productId);
+  return res.send(LikedProduct);
+};

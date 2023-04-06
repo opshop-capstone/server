@@ -39,3 +39,27 @@ exports.getCategoryPage = async function () {
 
   return itemList;
 };
+
+exports.getSearchProducts = async function (search) {
+  const searchParams = "%" + search + "%";
+  const connection = await pool.getConnection(async (conn) => conn);
+  const categoryPageResultList = await productDao.selectSearchProducts(
+    connection,
+    searchParams
+  );
+  connection.release();
+
+  return categoryPageResultList;
+};
+
+exports.checkLiked = async function (userId, productId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const checkLikedResult = await productDao.checkLiked(
+    connection,
+    userId,
+    productId
+  );
+  connection.release();
+
+  return checkLikedResult;
+};

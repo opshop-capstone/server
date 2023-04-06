@@ -11,34 +11,48 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { connect } = require("http2");
 
-// Service: Create, Update, Delete 비즈니스 로직 처리
+exports.postLiked = async function (userId, productId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    connection.beginTransaction();
 
-// exports.createproduct = async function (email, password, nickname) {
-//   try {
-//     // 이메일 중복 확인
-//     const emailRows = await productProvider.emailCheck(email);
-//     if (emailRows.length > 0)
-//       return errResponse(baseResponse.SIGNUP_REDUNDANT_EMAIL);
+    const checkLiked = await productProvider.checkLiked(userId, productId);
+    if (checkLiked.length > 0) {
+      const deleteLiked = await productDao.deleteLiked(
+        connection,
+        userId,
+        productId
+      );
+      connection.commit();
+      return response(
+        {
+          isSuccess: true,
+          code: 1000,
+          message: "좋아요 제거 성공",
+        },
+        deleteLiked
+      );
+    } else {
+      const insertLiked = await productDao.insertLiked(
+        connection,
+        userId,
+        productId
+      );
 
-//     // 비밀번호 암호화
-//     const hashedPassword = await crypto
-//       .createHash("sha512")
-//       .update(password)
-//       .digest("hex");
+      connection.commit();
 
-//     const insertproductInfoParams = [email, hashedPassword, nickname];
-
-//     const connection = await pool.getConnection(async (conn) => conn);
-
-//     const productIdResult = await productDao.insertproductInfo(
-//       connection,
-//       insertproductInfoParams
-//     );
-//     console.log(`추가된 회원 : ${productIdResult[0].insertId}`);
-//     connection.release();
-//     return response(baseResponse.SUCCESS);
-//   } catch (err) {
-//     logger.error(`App - createproduct Service error\n: ${err.message}`);
-//     return errResponse(baseResponse.DB_ERROR);
-//   }
-//};
+      return response(
+        { isSuccess: true, code: 1000, message: "좋아요 성공" },
+        {
+          insertLikeId: insertLiked.insertId,
+        }
+      );
+    }
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - postLiked Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};

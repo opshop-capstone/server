@@ -95,6 +95,37 @@ async function checkItemStatus(connection, itemId) {
   ]);
   return checkItemStatusRow[0];
 }
+
+async function selectUserAddress(connection, userId) {
+  const selectUserAddressQuery = `
+      -- 주소 목록 조회
+      select name, road_address, detail_address, zipcode,is_main
+      from UserAddress
+      where user_id=? and status ='ACTIVE';`;
+  const selectUserAddressRow = await connection.query(
+    selectUserAddressQuery,
+    userId
+  );
+  return selectUserAddressRow[0];
+}
+
+async function insertAddress(
+  connection,
+  [userId, name, road_address, detail_address, zipcode, is_main]
+) {
+  const insertAddressQuery = `
+  -- 주소 추가
+  insert into UserAddress (user_id,name,road_address,detail_address,zipcode,is_main) values (?,?,?,?,?,?);`;
+  const insertAddressRow = await connection.query(insertAddressQuery, [
+    userId,
+    name,
+    road_address,
+    detail_address,
+    zipcode,
+    is_main,
+  ]);
+  return insertAddressRow[0];
+}
 module.exports = {
   selectUserEmail,
   insertUserInfo,
@@ -104,4 +135,6 @@ module.exports = {
   insertOrders,
   insertOrderItems,
   checkItemStatus,
+  selectUserAddress,
+  insertAddress,
 };

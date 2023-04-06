@@ -5,4 +5,11 @@ module.exports = function (app) {
 
   app.get("/opshop/products/:productId", product.getProductDetail);
   app.get("/opshop/categorys", product.getCategoryPage);
+
+  app.get("/opshop/products", product.getSearchProducts);
+  app.post(
+    "/opshop/products/:productId/liked",
+    jwtMiddleware,
+    product.postLiked
+  );
 };

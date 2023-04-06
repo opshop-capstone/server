@@ -36,3 +36,10 @@ exports.getMypage = async function (userId) {
 
   return mypageResult;
 };
+
+exports.getMyAddress = async function (userId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const userAddressResult = await userDao.selectUserAddress(connection, userId);
+  connection.release();
+  return userAddressResult[0];
+};

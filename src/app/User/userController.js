@@ -83,6 +83,33 @@ exports.getMypage = async function (req, res) {
   return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS, mypage));
 };
 
+/**
+ * 주소 조회
+ */
+exports.getMyAddress = async function (req, res) {
+  const userId = req.verifiedToken.userId;
+  const myAddress = await userProvider.getMyAddress(userId);
+  return res.send(response(baseResponse.SUCCESS, myAddress));
+};
+
+/**
+ * 주소 추가
+ */
+exports.postMyAddress = async function (req, res) {
+  const userId = req.verifiedToken.userId;
+  const { name, road_address, detail_address, zipcode, is_main } = req.body;
+
+  const setMyAddress = await userService.postMyAddress(
+    userId,
+    name,
+    road_address,
+    detail_address,
+    zipcode,
+    is_main
+  );
+  return res.send(setMyAddress);
+};
+
 // 대출 결제
 let tid;
 let userId, itemId, addressId, total_price, quantity, item_price;

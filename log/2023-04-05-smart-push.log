@@ -1,0 +1,21 @@
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 20:49:50"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 20:50:48"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 20:51:25"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 20:55:03"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 21:00:20"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 21:29:53"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 21:31:33"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 21:52:09"}
+{"level":"error","message":"App - postLiked Service error\n: checkLikedQuery is not defined","timestamp":"2023-04-05 21:52:12"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 21:53:45"}
+{"level":"error","message":"App - postLiked Service error\n: checkLikedQuery is not defined","timestamp":"2023-04-05 21:53:46"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 21:54:32"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 21:55:31"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 21:56:37"}
+{"level":"error","message":"App - postLiked Service error\n: Unknown column 'userId' in 'where clause'","timestamp":"2023-04-05 21:56:39"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 21:57:00"}
+{"level":"error","message":"App - postLiked Service error\n: Unknown column 'itme_id' in 'where clause'","timestamp":"2023-04-05 21:57:01"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 21:57:31"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 22:00:10"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 22:00:48"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-05 22:01:57"}

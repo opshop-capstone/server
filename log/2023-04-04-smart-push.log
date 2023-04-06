@@ -21,3 +21,18 @@
 {"level":"error","message":"App - insertOrder Service error\n: price is not defined","timestamp":"2023-04-04 21:59:43"}
 {"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-04 22:00:19"}
 {"level":"error","message":"App - insertOrder Service error\n: Cannot add or update a child row: a foreign key constraint fails (`opshop`.`orderitem`, CONSTRAINT `FK_OrderItem_product_id_Product_id` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT)","timestamp":"2023-04-04 22:00:37"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-04 23:06:40"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-04 23:07:43"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-04 23:22:20"}
+{"level":"error","message":"App - postMyAddress Service error\n: Column count doesn't match value count at row 1","timestamp":"2023-04-04 23:22:21"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-04 23:24:48"}
+{"level":"error","message":"App - postMyAddress Service error\n: Column count doesn't match value count at row 1","timestamp":"2023-04-04 23:24:48"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-04 23:26:30"}
+{"level":"error","message":"App - postMyAddress Service error\n: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?,?,?,?,?)' at line 2","timestamp":"2023-04-04 23:26:32"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-04 23:27:42"}
+{"level":"error","message":"App - postMyAddress Service error\n: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?,?,?,?,?)' at line 2","timestamp":"2023-04-04 23:27:43"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-04 23:29:43"}
+{"level":"error","message":"App - postMyAddress Service error\n: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?,?,?,?,?)' at line 2","timestamp":"2023-04-04 23:29:45"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-04 23:32:46"}
+{"level":"error","message":"App - postMyAddress Service error\n: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?,?,?,?,?)' at line 2","timestamp":"2023-04-04 23:32:47"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-04 23:33:25"}

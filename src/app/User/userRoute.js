@@ -17,4 +17,10 @@ module.exports = function (app) {
 
   // 대출 결제 승인 요청
   app.get("/opshop/payment/approve", user.payment_success);
+
+  //주소 조회
+  app.get("/opshop/address", jwtMiddleware, user.getMyAddress);
+
+  //주소 추가
+  app.post("/opshop/address", jwtMiddleware, user.postMyAddress);
 };
