@@ -1,0 +1,10 @@
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-11 20:38:24"}
+{"level":"error","message":"App - insertOrder Service error\n: Unknown column 'itemId' in 'field list'","timestamp":"2023-04-11 20:38:59"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-11 20:44:16"}
+{"level":"error","message":"App - insertOrder Service error\n: Unknown column 'itemId' in 'field list'","timestamp":"2023-04-11 20:44:34"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-11 20:46:11"}
+{"level":"error","message":"App - insertOrder Service error\n: Unknown column 'itemId' in 'field list'","timestamp":"2023-04-11 20:46:30"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-11 20:49:06"}
+{"level":"error","message":"App - insertOrder Service error\n: Unknown column 'itemId' in 'field list'","timestamp":"2023-04-11 20:49:23"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-11 20:50:43"}
+{"level":"info","message":"undefined - API Server Start At Port 3000","timestamp":"2023-04-11 20:51:00"}

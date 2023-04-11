@@ -84,10 +84,21 @@ async function insertOrderItems(connection, [orderId, itemId, item_price]) {
   return insertOrderItemsRow[0];
 }
 
+async function updateStatusToSOLD(connection, item_id) {
+  const updateStatusToSOLDQuery = `
+    call updateProductStatusToSold(?) 
+`;
+  const updateStatusToSOLDRow = await connection.query(
+    updateStatusToSOLDQuery,
+    item_id
+  );
+  return updateStatusToSOLDRow[0];
+}
+
 async function checkItemStatus(connection, itemId) {
   const checkItemStatusQuery = `
       -- 상품 상태 체크
-      select itemId
+      select id,status
       from Product
       where status='ACTIVE' and id=?`;
   const checkItemStatusRow = await connection.query(checkItemStatusQuery, [
@@ -197,4 +208,5 @@ module.exports = {
   selectSubscribeList,
   selectMyReviewList,
   selectMyDetailReview,
+  updateStatusToSOLD,
 };

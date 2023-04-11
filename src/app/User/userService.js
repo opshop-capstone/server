@@ -161,12 +161,19 @@ exports.insertOrderResult = async function (
     ]);
 
     const orderId = insertOrders.insertId;
+
     for (let i = 0; i < quantity; i++) {
       const insertOrdersItem = await userDao.insertOrderItems(connection, [
         orderId,
         items[i],
         each_price[i],
       ]);
+    }
+    for (let i = 0; i < quantity; i++) {
+      const updateStatus = await userDao.updateStatusToSOLD(
+        connection,
+        items[i]
+      );
     }
 
     connection.commit();
