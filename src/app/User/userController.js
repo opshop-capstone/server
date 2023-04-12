@@ -37,8 +37,6 @@ exports.postUsers = async function (req, res) {
   if (!regexEmail.test(email))
     return res.send(response(baseResponse.SIGNUP_EMAIL_ERROR_TYPE));
 
-  // 기타 등등 - 추가하기
-
   const signUpResponse = await userService.createUser(
     email,
     password,
@@ -59,6 +57,14 @@ exports.login = async function (req, res) {
   const { email, password } = req.body;
 
   // TODO: email, password 형식적 Validation
+  if (!email) {
+    res.send(response(baseResponse.SIGNIN_EMAIL_EMPTY));
+  }
+  if (!password) {
+    res.send(response(baseResponse.SIGNIN_PASSWORD_EMPTY));
+  }
+  if (!regexEmail.test(email))
+    return res.send(response(baseResponse.SIGNUP_EMAIL_ERROR_TYPE));
 
   const signInResponse = await userService.postSignIn(email, password);
 
@@ -150,10 +156,11 @@ exports.getMyReviewList = async function (req, res) {
   return;
 };
 
-// 대출 결제
+// 결제
 let tid;
 let userId, itemId, addressId, total_price, quantity, item_price;
 
+//결제 API
 exports.payment = async function (req, res) {
   userId = req.verifiedToken.userId; // jwt 토큰에서 받아오는 userId
   itemId = req.body.itemId; //상품ID like ("1,2,3")
@@ -163,7 +170,7 @@ exports.payment = async function (req, res) {
   quantity = req.body.quantity; //총 주문 상품 개수
 
   let headers = {
-    Authorization: "KakaoAK " + "09de250ff665b14b4f0fbc5c136f0cf8",
+    Authorization: "KakaoAK " + "09de250ff665b14b4f0fbc5c136f0cf8", //카카오에서 생성한 인증키
     "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
   };
 
@@ -198,15 +205,15 @@ exports.payment = async function (req, res) {
       tid = JSON.parse(body).tid;
       console.log(userId, itemId, addressId, total_price, quantity, item_price);
       return res.send(next_redirect_pc_url); // redirect 하는 코드
-    } else console.log("대출결제승인요청실패");
+    } else console.log("결제 준비 실패");
   });
 };
 
-//대출결제 승인요청
+//결제 승인요청
 exports.payment_success = async function (req, res) {
   const pg_token = req.query.pg_token;
   let headers = {
-    Authorization: "KakaoAK " + "09de250ff665b14b4f0fbc5c136f0cf8",
+    Authorization: "KakaoAK " + "09de250ff665b14b4f0fbc5c136f0cf8", //카카오에서 생성한 인증키
     "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
   };
 
@@ -235,7 +242,7 @@ exports.payment_success = async function (req, res) {
         quantity,
         item_price
       );
-      //나중에 결제완료 창으로 redirect되도록 만들예정
+      // 결제완료 창으로 redirect되도록 만들예정
       return res.send(insertOrderResult);
     } else {
       console.log("결제 승인 실패", error, response.body);
