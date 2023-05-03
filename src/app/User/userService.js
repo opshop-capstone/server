@@ -127,7 +127,6 @@ exports.insertOrderResult = async function (
   userId,
   itemId,
   addressId,
-  total_price,
   quantity,
   item_price
 ) {
@@ -154,24 +153,23 @@ exports.insertOrderResult = async function (
       }
     }
 
-    const insertOrders = await userDao.insertOrders(connection, [
-      userId,
-      total_price,
-      addressId,
-    ]);
-
-    const orderId = insertOrders.insertId;
-
     for (let i = 0; i < quantity; i++) {
       const insertOrdersItem = await userDao.insertOrderItems(connection, [
-        orderId,
+        userId,
         items[i],
         each_price[i],
+        addressId,
       ]);
     }
+    //상품 상태를 업데이트하고 해당 상품을 장바구니 목록에서 비운다.
     for (let i = 0; i < quantity; i++) {
-      const updateStatus = await userDao.updateStatusToSOLD(
+      const updateProductStatus = await userDao.updateProductStatusToSOLD(
         connection,
+        items[i]
+      );
+      const updateCartStatus = await userDao.updateCartStatusToDELETED(
+        connection,
+        userId,
         items[i]
       );
     }
@@ -188,35 +186,26 @@ exports.insertOrderResult = async function (
   }
 };
 
-exports.postMyAddress = async function (
-  userId,
-  name,
-  road_address,
-  detail_address,
-  zipcode,
-  is_main
-) {
+exports.orderCancel = async function (userId, orderId) {
   const connection = await pool.getConnection(async (conn) => conn);
   try {
     connection.beginTransaction();
-
-    const addMyAddress = await userDao.insertAddress(connection, [
+    const updateOrderStatusToCANCEL = await userDao.updateOrderStatusToCANCEL(
+      connection,
       userId,
-      name,
-      road_address,
-      detail_address,
-      zipcode,
-      is_main,
-    ]);
-    console.log(addMyAddress);
+      orderId
+    );
+
     connection.commit();
 
-    return response(baseResponse.SUCCESS, {
-      insertAddressId: addMyAddress.insertId,
+    return response({
+      isSuccess: true,
+      code: 200,
+      message: "취소신청이 완료되었습니다.",
     });
   } catch (err) {
     connection.rollback();
-    logger.error(`App - postMyAddress Service error\n: ${err.message}`);
+    logger.error(`App - insertOrder Service error\n: ${err.message}`);
     return errResponse(baseResponse.DB_ERROR);
   } finally {
     connection.release();
