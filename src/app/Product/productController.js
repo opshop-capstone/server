@@ -7,7 +7,7 @@ const { response, errResponse } = require("../../../config/response");
 const { emit } = require("nodemon");
 
 /**
- * 스토어의 상품목록 조회
+ * 스토어의 상품상세 조회
  */
 exports.getProductDetail = async function (req, res) {
   const productId = req.params.productId;

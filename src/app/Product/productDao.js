@@ -15,9 +15,9 @@ async function selectProductDetail(connection, productId) {
 
 async function selectProductDetailImages(connection, productId) {
   const selectProductDetailImagesQuery = `
-            select PI.url as product_image
-            from ProductImage PI join Product P on PI.product_id = P.id
-            where P.id=? and PI.status='ACTIVE' and P.status='ACTIVE';
+          select group_concat(PI.url separator ',') as product_image
+          from ProductImage PI join Product P on PI.product_id = P.id
+          where P.id=? and PI.status='ACTIVE' and P.status='ACTIVE';
       `;
   const selectProductDetailImagesRow = await connection.query(
     selectProductDetailImagesQuery,
