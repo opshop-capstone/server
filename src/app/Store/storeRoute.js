@@ -2,6 +2,10 @@ module.exports = function (app) {
   const store = require("./storeController");
 
   const jwtMiddleware = require("../../../config/jwtMiddleware");
+
+  //인기 상점 리스트
+  app.get("/opshop/stores", store.getPopularStoreList);
+
   // 상점의 상품 조회
   app.get("/opshop/stores/:storeId", store.getStoreProducts);
 

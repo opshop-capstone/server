@@ -1,3 +1,17 @@
+async function selectStoreList(connection) {
+  const selectStoreListQuery = `
+    -- 상점 리스트 조회 - 좋아요 많은 순
+
+   select S.id, S.store_name,S.store_image_url
+    from Store S left join LikedStore LS on S.id = LS.store_id
+    where  S.status='ACTIVE'
+    group by LS.store_id
+    order by count(LS.id) desc;
+  ;`;
+  const selectStoreListRow = await connection.query(selectStoreListQuery);
+  return selectStoreListRow[0];
+}
+
 async function selectStoreProducts(connection, storeId) {
   const selectStoreProductsQuery = `
         select PI.url as product_thumbnail , P.title
@@ -117,4 +131,5 @@ module.exports = {
   checkSubscribe,
   deleteSubscribe,
   insertSubscribe,
+  selectStoreList,
 };

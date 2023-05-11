@@ -3,6 +3,14 @@ const { logger } = require("../../../config/winston");
 
 const storeDao = require("./storeDao");
 
+exports.getPopularStoreList = async function () {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const storeListResult = await storeDao.selectStoreList(connection);
+  connection.release();
+
+  return storeListResult;
+};
+
 exports.getStoreProducts = async function (storeId) {
   const connection = await pool.getConnection(async (conn) => conn);
   const storProductsResult = await storeDao.selectStoreProducts(

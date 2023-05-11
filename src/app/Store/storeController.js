@@ -7,6 +7,14 @@ const { response, errResponse } = require("../../../config/response");
 const { emit } = require("nodemon");
 
 /**
+ * 인기 상점 목록 조회
+ */
+exports.getPopularStoreList = async function (req, res) {
+  const storeList = await storeProvider.getPopularStoreList();
+  return res.send(response(baseResponse.SUCCESS, storeList));
+};
+
+/**
  * 스토어의 상품목록 조회
  */
 
