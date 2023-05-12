@@ -41,6 +41,22 @@ async function selectCategoryPage(connection, categoryId) {
   return selectCategoryPageRow[0];
 }
 
+async function selectPopularProductList(connection) {
+  const selectPopularProductListQuery = `
+      select P.id as product_id ,S.id as store_id, S.store_name,P.title, PI.url as thumbnail,count(LI.id) as liked
+      from Product P join ProductImage PI on P.id = PI.product_id
+          join Store S on S.id = P.store_id
+          join LikedItem as LI on P.id=LI.item_id
+      where  S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES'
+      group by LI.item_id
+      order by count(LI.id) desc;
+    `;
+  const selectPopularProductListRow = await connection.query(
+    selectPopularProductListQuery
+  );
+  return selectPopularProductListRow[0];
+}
+
 async function selectSearchProducts(connection, searchParams) {
   const selectSearchProductsQuery = `
       -- 검색 상품 리스트
@@ -140,4 +156,5 @@ module.exports = {
   deleteLiked,
   selectProductsByCategory,
   selectProductsByCategoryAndSearch,
+  selectPopularProductList,
 };

@@ -34,13 +34,8 @@ exports.getSearchProducts = async function (req, res) {
   const search = req.query.search;
   const categoryId = req.query.categoryId;
   if (!search && !categoryId) {
-    return res.send(
-      response({
-        isSuccess: false,
-        code: 301,
-        message: "검색어를 입력해주세요.",
-      })
-    );
+    const popularProductList = await productProvider.getPopularProductList();
+    return res.send(response(baseResponse.SUCCESS, popularProductList));
   } else if (search && !categoryId) {
     const searchProducts = await productProvider.getSearchProducts(search);
     return res.send(response(baseResponse.SUCCESS, searchProducts));

@@ -2,7 +2,7 @@ async function selectStoreList(connection) {
   const selectStoreListQuery = `
     -- 상점 리스트 조회 - 좋아요 많은 순
 
-   select S.id, S.store_name,S.store_image_url
+   select S.id, S.store_name,S.store_image_url, count(LS.id) as liked
     from Store S left join LikedStore LS on S.id = LS.store_id
     where  S.status='ACTIVE'
     group by LS.store_id

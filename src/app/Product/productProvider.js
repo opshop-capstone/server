@@ -40,6 +40,16 @@ exports.getCategoryPage = async function () {
   return itemList;
 };
 
+exports.getPopularProductList = async function () {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const popularProductListResult = await productDao.selectPopularProductList(
+    connection
+  );
+  connection.release();
+
+  return popularProductListResult;
+};
+
 exports.getSearchProducts = async function (search) {
   const searchParams = "%" + search + "%";
   const connection = await pool.getConnection(async (conn) => conn);
