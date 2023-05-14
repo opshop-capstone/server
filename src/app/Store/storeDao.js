@@ -23,10 +23,10 @@ async function selectStoreList(connection) {
 async function selectStoreProducts(connection, storeId) {
   const selectStoreProductsQuery = `
   -- 매장 방문 - 최신 등록 상품 순
-        select PI.url as product_thumbnail , P.title
-        from Store S join Product P on S.id = P.store_id join ProductImage PI on P.id = PI.product_id
-        where S.id=? and S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES' and PI.status='ACTIVE'
-        order by P.create_at desc ;
+  select S.id as store_id ,P.id as product_id,PI.url as product_thumbnail , P.title
+  from Store S join Product P on S.id = P.store_id join ProductImage PI on P.id = PI.product_id
+  where S.id=? and S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES' and PI.status='ACTIVE'
+  order by P.create_at desc ;
         `;
   const selectStoreProductsRow = await connection.query(
     selectStoreProductsQuery,
