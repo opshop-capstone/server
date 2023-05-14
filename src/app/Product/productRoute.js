@@ -9,9 +9,11 @@ module.exports = function (app) {
   // 카테고리 별 상품 조회 (카테고리 페이지)
   app.get("/opshop/categorys", product.getCategoryPage);
 
-  // 전체 상품 조회 + 필터링 추가 필요
+  // 인기 상품 조회 + 검색 필터링
   app.get("/opshop/products", product.getSearchProducts);
 
+  // 추천 상품 조회
+  app.get("/opshop/products/recommand", product.recommandProducts);
   // 상품 좋아요&취소
   app.post("/opshop/products/liked", jwtMiddleware, product.postLiked);
 };

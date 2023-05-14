@@ -28,7 +28,7 @@ exports.getCategoryPage = async function (req, res) {
 };
 
 /**
- * 검색 상품 페이지
+ * 인기 상품 페이지 (좋아요 순) + 검색 필터링
  */
 exports.getSearchProducts = async function (req, res) {
   const search = req.query.search;
@@ -51,6 +51,19 @@ exports.getSearchProducts = async function (req, res) {
     );
     return res.send(response(baseResponse.SUCCESS, bothProducts));
   }
+};
+
+/**
+ * 추천 상품 리스트
+ */
+exports.recommandProducts = async function (req, res) {
+  const productId = req.params.productId;
+  const productDetail = await productProvider.getProductDetail(productId);
+  const productDetailImages = await productProvider.getProductDetailImages(
+    productId
+  );
+  const productList = { info: productDetail, images: productDetailImages };
+  return res.send(response(baseResponse.SUCCESS, productList));
 };
 
 /**
