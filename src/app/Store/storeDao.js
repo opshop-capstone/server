@@ -55,10 +55,10 @@ async function selectStoreReviewsScore(connection, storeId) {
 
 async function selectStoreInfo(connection, storeId) {
   const selectStoreInfoQuery = `
-      -- 상품 정보
-    select id,store_name, tel,email,bussiness_code,address
-    from Store S
-    where id=? and status='ACTIVE';
+  -- 상품 정보
+  select S.id,S.store_name, S.tel,S.email,S.bussiness_code, SA.road_address, SA.detail_address,SA.zipcode
+  from Store S join StoreAddress SA on S.id = SA.store_id
+  where S.id=? and S.status='ACTIVE';
   `;
   const selectStoreInfoRow = await connection.query(
     selectStoreInfoQuery,
