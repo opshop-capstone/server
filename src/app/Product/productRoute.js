@@ -10,10 +10,15 @@ module.exports = function (app) {
   app.get("/opshop/categorys", product.getCategoryPage);
 
   // 인기 상품 조회 + 검색 필터링
-  app.get("/opshop/products", product.getSearchProducts);
+  app.get("/opshop/products", product.getProductsList);
 
   // 추천 상품 조회
-  app.get("/opshop/products/recommand", product.recommandProducts);
+  app.get(
+    "/opshop/products/reco/reco",
+    jwtMiddleware,
+    product.recommandProducts
+  );
+
   // 상품 좋아요&취소
   app.post("/opshop/products/liked", jwtMiddleware, product.postLiked);
 };

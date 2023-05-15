@@ -156,9 +156,9 @@ exports.payment_success = async function (req, res) {
     form: params,
   };
   console.log(pg_token, userId, tid, total_price);
-  request(options, function result(error, response, body) {
+  request(options, async function result(error, response, body) {
     if (!error && response.statusCode === 200) {
-      const insertOrderResult = userService.insertOrderResult(
+      const insertOrderResult = await userService.insertOrderResult(
         userId,
         itemId,
         addressId,

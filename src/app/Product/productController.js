@@ -3,7 +3,7 @@ const productProvider = require("./productProvider");
 const productService = require("./productService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const { response, errResponse } = require("../../../config/response");
-
+const { CF } = require("nodeml"); //  node.js용 머신러닝 라이브러리
 const { emit } = require("nodemon");
 
 /**
@@ -30,9 +30,11 @@ exports.getCategoryPage = async function (req, res) {
 /**
  * 인기 상품 페이지 (좋아요 순) + 검색 필터링
  */
-exports.getSearchProducts = async function (req, res) {
+exports.getProductsList = async function (req, res) {
   const search = req.query.search;
+  const filter = req.query.filter;
   const categoryId = req.query.categoryId;
+
   if (!search && !categoryId) {
     const popularProductList = await productProvider.getPopularProductList();
     return res.send(response(baseResponse.SUCCESS, popularProductList));
@@ -44,6 +46,33 @@ exports.getSearchProducts = async function (req, res) {
       categoryId
     );
     return res.send(response(baseResponse.SUCCESS, categoryProducts));
+  } else if (filter) {
+    const userId = req.verifiedToken.userId;
+    console.log(1);
+    let likeInfoResult = await productProvider.getLikeInfo();
+    likeInfoResult = Object.values(JSON.parse(JSON.stringify(likeInfoResult)));
+
+    const cf = new CF(); //User-based CF 알고리즘
+
+    //사용자별 30개씩 추천한 후 ndcg를 계산
+    cf.maxRelatedItem = 10;
+    cf.maxRelatedUser = 10;
+
+    // 사용자간 유사도 계산
+    cf.train(likeInfoResult, "userId", "productId", "rate");
+
+    // userIdx에게 count개의 pose추천, User의 학습 데이터가 없으면 (좋아요가 없는 유저) 랜덤 추천
+    let getRecommendResult = cf.recommendToUser(userId, 10);
+    let productList = [];
+
+    for (let i = 0; i < getRecommendResult.length; i++) {
+      productList.push(parseInt(getRecommendResult[i].itemId));
+    }
+
+    let recommandProductsResult = await productProvider.getRecommandProducts(
+      productList
+    );
+    return res.send(response(baseResponse.SUCCESS, recommandProductsResult));
   } else {
     const bothProducts = await productProvider.getProductsByCategoryAndSearch(
       categoryId,
@@ -57,13 +86,32 @@ exports.getSearchProducts = async function (req, res) {
  * 추천 상품 리스트
  */
 exports.recommandProducts = async function (req, res) {
-  const productId = req.params.productId;
-  const productDetail = await productProvider.getProductDetail(productId);
-  const productDetailImages = await productProvider.getProductDetailImages(
-    productId
+  const userId = req.verifiedToken.userId;
+  console.log(1);
+  let likeInfoResult = await productProvider.getLikeInfo();
+  likeInfoResult = Object.values(JSON.parse(JSON.stringify(likeInfoResult)));
+
+  const cf = new CF(); //User-based CF 알고리즘
+
+  //사용자별 30개씩 추천한 후 ndcg를 계산
+  cf.maxRelatedItem = 10;
+  cf.maxRelatedUser = 10;
+
+  // 사용자간 유사도 계산
+  cf.train(likeInfoResult, "userId", "productId", "rate");
+
+  // userIdx에게 count개의 pose추천, User의 학습 데이터가 없으면 (좋아요가 없는 유저) 랜덤 추천
+  let getRecommendResult = cf.recommendToUser(userId, 10);
+  let productList = [];
+
+  for (let i = 0; i < getRecommendResult.length; i++) {
+    productList.push(parseInt(getRecommendResult[i].itemId));
+  }
+
+  let recommandProductsResult = await productProvider.getRecommandProducts(
+    productList
   );
-  const productList = { info: productDetail, images: productDetailImages };
-  return res.send(response(baseResponse.SUCCESS, productList));
+  return recommandProductsResult;
 };
 
 /**

@@ -3,6 +3,24 @@ const { logger } = require("../../../config/winston");
 
 const productDao = require("./productDao");
 
+exports.getLikeInfo = async function () {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const likeInfoResult = await productDao.selectLikeInfo(connection);
+  connection.release();
+
+  return likeInfoResult;
+};
+
+exports.getRecommandProducts = async function (productList) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const recommandProductsResult = await productDao.selectRecommandProducts(
+    connection,
+    productList
+  );
+
+  return recommandProductsResult;
+};
+
 exports.getProductDetail = async function (productId) {
   const connection = await pool.getConnection(async (conn) => conn);
   const productDetailResult = await productDao.selectProductDetail(

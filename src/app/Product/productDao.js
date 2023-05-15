@@ -43,7 +43,7 @@ async function selectCategoryPage(connection, categoryId) {
 
 async function selectPopularProductList(connection) {
   const selectPopularProductListQuery = `
-      select P.id as product_id ,S.id as store_id, S.store_name,P.title, PI.url as thumbnail,count(LI.id) as liked
+      select P.id as product_id ,S.id as store_id, S.store_name,P.title,round(P.price ,0) as price, PI.url as thumbnail,count(LI.id) as liked
       from Product P join ProductImage PI on P.id = PI.product_id
           join Store S on S.id = P.store_id
           join LikedItem as LI on P.id=LI.item_id
@@ -146,6 +146,55 @@ async function deleteLiked(connection, userId, productId) {
   ]);
   return deleteLikedRow[0];
 }
+
+async function selectLikeInfo(connection) {
+  const selectLikeInfoQuery = `
+  -- 좋아요 정보 조회 for 추천 데이터 
+    select user_id as userId, item_id as productId,10 as rate
+    from LikedItem
+    where status='ACTIVE'
+    `;
+  const selectLikeInfoRow = await connection.query(selectLikeInfoQuery);
+  return selectLikeInfoRow[0];
+}
+
+async function selectRecommandProducts(connection, productList) {
+  let Query = `
+  -- 추천 상품 목록 조회
+  select P.id as product_id , P.store_id,S.store_name,P.title,PI.url as thumbnail,P.price, ifnull(x.likeCnt, 0) as like_count
+  from Product P
+    left join (
+        select LI.item_id, count(*) likeCnt
+        from LikedItem LI
+        group by LI.item_id
+      ) x on x.item_id = P.id
+      join Store S on P.store_id = S.id
+      join ProductImage PI on P.id = PI.product_id
+  where P.status = 'ACTIVE' and P.id in (${productList}) and PI.is_thumbnail='YES'
+  ORDER BY FIELD(P.id,${productList});
+  -- FIELD 함수를 이용하여 특정한 값을 우선적으로 정렬할 수 있다.
+    `;
+  const recommandData = await connection.query(Query);
+
+  Query = `
+  -- 추천 안된 상품 목록
+    select P.id as product_id , P.store_id,S.store_name,P.title,PI.url as thumbnail,P.price, ifnull(x.likeCnt, 0) as like_count
+    from Product P
+      left join (
+          select LI.item_id, count(*) likeCnt
+          from LikedItem LI
+          group by LI.item_id
+        ) x on x.item_id = P.id
+      join Store S on P.store_id = S.id
+      join ProductImage PI on P.id = PI.product_id
+    where P.status = 'ACTIVE' and P.id not in (${productList}) and PI.is_thumbnail='YES'
+    ORDER BY P.create_at desc;
+  `;
+  const normalData = await connection.query(Query);
+  const productsRow = recommandData[0].concat(normalData[0]);
+  return productsRow;
+}
+
 module.exports = {
   selectProductDetail,
   selectProductDetailImages,
@@ -157,4 +206,6 @@ module.exports = {
   selectProductsByCategory,
   selectProductsByCategoryAndSearch,
   selectPopularProductList,
+  selectLikeInfo,
+  selectRecommandProducts,
 };
