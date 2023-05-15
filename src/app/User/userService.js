@@ -125,23 +125,20 @@ exports.editUser = async function (id, nickname) {
 
 exports.insertOrderResult = async function (
   userId,
-  itemId,
+  itemIds,
   addressId,
   quantity,
-  item_price
+  item_prices
 ) {
   const connection = await pool.getConnection(async (conn) => conn);
   try {
     connection.beginTransaction();
 
-    items = itemId.split(",");
-    each_price = item_price.split(",");
-
     // 주문하려는 상품중에 품절상품 체크 벨리데이션
     for (let i = 0; i < quantity; i++) {
       const checkItemStatus = await userDao.checkItemStatus(
         connection,
-        items[i]
+        itemIds[i]
       );
       if (checkItemStatus.length == 0) {
         return errResponse({
@@ -156,8 +153,8 @@ exports.insertOrderResult = async function (
     for (let i = 0; i < quantity; i++) {
       const insertOrdersItem = await userDao.insertOrderItems(connection, [
         userId,
-        items[i],
-        each_price[i],
+        itemIds[i],
+        each_prices[i],
         addressId,
       ]);
     }
