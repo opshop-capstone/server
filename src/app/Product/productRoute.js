@@ -14,7 +14,7 @@ module.exports = function (app) {
 
   // 추천 상품 조회
   app.get(
-    "/opshop/products/reco/reco",
+    "/opshop/products/reco/lists",
     jwtMiddleware,
     product.recommandProducts
   );

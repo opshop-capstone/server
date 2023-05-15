@@ -32,7 +32,7 @@ exports.getCategoryPage = async function (req, res) {
  */
 exports.getProductsList = async function (req, res) {
   const search = req.query.search;
-  const filter = req.query.filter;
+  const recommand = req.query.recommand;
   const categoryId = req.query.categoryId;
 
   if (!search && !categoryId) {
@@ -46,33 +46,6 @@ exports.getProductsList = async function (req, res) {
       categoryId
     );
     return res.send(response(baseResponse.SUCCESS, categoryProducts));
-  } else if (filter) {
-    const userId = req.verifiedToken.userId;
-    console.log(1);
-    let likeInfoResult = await productProvider.getLikeInfo();
-    likeInfoResult = Object.values(JSON.parse(JSON.stringify(likeInfoResult)));
-
-    const cf = new CF(); //User-based CF 알고리즘
-
-    //사용자별 30개씩 추천한 후 ndcg를 계산
-    cf.maxRelatedItem = 10;
-    cf.maxRelatedUser = 10;
-
-    // 사용자간 유사도 계산
-    cf.train(likeInfoResult, "userId", "productId", "rate");
-
-    // userIdx에게 count개의 pose추천, User의 학습 데이터가 없으면 (좋아요가 없는 유저) 랜덤 추천
-    let getRecommendResult = cf.recommendToUser(userId, 10);
-    let productList = [];
-
-    for (let i = 0; i < getRecommendResult.length; i++) {
-      productList.push(parseInt(getRecommendResult[i].itemId));
-    }
-
-    let recommandProductsResult = await productProvider.getRecommandProducts(
-      productList
-    );
-    return res.send(response(baseResponse.SUCCESS, recommandProductsResult));
   } else {
     const bothProducts = await productProvider.getProductsByCategoryAndSearch(
       categoryId,
@@ -87,7 +60,7 @@ exports.getProductsList = async function (req, res) {
  */
 exports.recommandProducts = async function (req, res) {
   const userId = req.verifiedToken.userId;
-  console.log(1);
+
   let likeInfoResult = await productProvider.getLikeInfo();
   likeInfoResult = Object.values(JSON.parse(JSON.stringify(likeInfoResult)));
 
@@ -111,7 +84,7 @@ exports.recommandProducts = async function (req, res) {
   let recommandProductsResult = await productProvider.getRecommandProducts(
     productList
   );
-  return recommandProductsResult;
+  return res.send(response(baseResponse.SUCCESS, recommandProductsResult));
 };
 
 /**

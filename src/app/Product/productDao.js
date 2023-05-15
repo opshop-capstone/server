@@ -1,9 +1,14 @@
 async function selectProductDetail(connection, productId) {
   const selectProductDetailQuery = `
   -- 특정 상품 상세 조회 
-    select S.id as store_id,S.store_name , P.title, round(P.price ,0) as price, P.content,P.size,C.name as category
+    select S.id as store_id,S.store_name , P.title, round(P.price ,0) as price, P.content,P.size,ifnull(x.likeCnt,0) as like_count,C.name as category
     from Product P join Store S on P.store_id = S.id
     join Category C on P.category_id = C.id
+    left join (
+      select LI.item_id, count(*) likeCnt
+      from LikedItem LI
+      group by LI.item_id
+    ) x on x.item_id = P.id
     where  P.id= ? and P.status='ACTIVE'  and S.status='ACTIVE';
     `;
   const selectProductDetailRow = await connection.query(
@@ -43,13 +48,19 @@ async function selectCategoryPage(connection, categoryId) {
 
 async function selectPopularProductList(connection) {
   const selectPopularProductListQuery = `
-      select P.id as product_id ,S.id as store_id, S.store_name,P.title,round(P.price ,0) as price, PI.url as thumbnail,count(LI.id) as liked
-      from Product P join ProductImage PI on P.id = PI.product_id
-          join Store S on S.id = P.store_id
-          join LikedItem as LI on P.id=LI.item_id
-      where  S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES'
-      group by LI.item_id
-      order by count(LI.id) desc;
+  -- 인기 상품 (좋아요순) 리스트 
+  select P.id as product_id ,S.id as store_id, S.store_name,P.title,round(P.price ,0) as price, PI.url as thumbnail,ifnull(x.likeCnt,0) as like_count,C.name as category
+  from Product P join ProductImage PI on P.id = PI.product_id
+      join Store S on S.id = P.store_id
+     left join (
+  select LI.item_id, count(*) likeCnt
+  from LikedItem LI
+  group by LI.item_id
+) x on x.item_id = P.id
+join Category C on P.category_id = C.id
+  where  S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES'
+order by like_count desc
+ ;
     `;
   const selectPopularProductListRow = await connection.query(
     selectPopularProductListQuery
@@ -60,15 +71,24 @@ async function selectPopularProductList(connection) {
 async function selectSearchProducts(connection, searchParams) {
   const selectSearchProductsQuery = `
       -- 검색 상품 리스트
-      select P.id as product_id, S.id as store_id , S.store_name,PI.url as product_thumbnail , P.title,round(P.price ,0) as price
-      from Store S join Product P on S.id = P.store_id join ProductImage PI on P.id = PI.product_id
-      where (P.title like ? or P.content like ?)  and S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES' and PI.status='ACTIVE'
-      ;
+      select P.id as product_id ,S.id as store_id, S.store_name,P.title,round(P.price ,0) as price, PI.url as thumbnail,ifnull(x.likeCnt,0) as like_count,C.name as category
+      from Product P join ProductImage PI on P.id = PI.product_id
+          join Store S on S.id = P.store_id
+         left join (
+      select LI.item_id, count(*) likeCnt
+      from LikedItem LI
+      group by LI.item_id
+    ) x on x.item_id = P.id
+    join Category C on P.category_id = C.id
+      where  S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES' and (P.title like ? or P.content like ? or S.store_name like ?) 
+      order by like_count desc
+     ;
+
   
         `;
   const selectSearchProductsRow = await connection.query(
     selectSearchProductsQuery,
-    [searchParams, searchParams]
+    [searchParams, searchParams, searchParams]
   );
   return selectSearchProductsRow[0];
 }
@@ -76,10 +96,19 @@ async function selectSearchProducts(connection, searchParams) {
 async function selectProductsByCategory(connection, categoryId) {
   const selectProductsByCategoryQuery = `
       -- 카테고리별 상품 리스트
-      select  S.id as store_id,S.store_name ,P.id as product_id , P.title, round(P.price ,0) as price,PI.url as product_thumbnail ,C.id as category_id,C.name as category
-      from Store S join Product P on S.id = P.store_id join ProductImage PI on P.id = PI.product_id join Category C on P.category_id = C.id
-      where C.id=? and S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES' and PI.status='ACTIVE'
-      ;
+    
+select P.id as product_id ,S.id as store_id, S.store_name,P.title,round(P.price ,0) as price, PI.url as thumbnail,ifnull(x.likeCnt,0) as like_count,C.name as category
+      from Product P join ProductImage PI on P.id = PI.product_id
+          join Store S on S.id = P.store_id
+         left join (
+      select LI.item_id, count(*) likeCnt
+      from LikedItem LI
+      group by LI.item_id
+    ) x on x.item_id = P.id
+    join Category C on P.category_id = C.id
+      where  S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES' and category_id=?
+      order by like_count desc
+     ;
   
         `;
   const selectProductsByCategoryRow = await connection.query(
@@ -95,16 +124,24 @@ async function selectProductsByCategoryAndSearch(
   searchParams
 ) {
   const selectProductsByCategoryAndSearchQuery = `
-      -- 카테고리별 검색 상품 리스트
-      select S.id as store_id,S.store_name ,P.id as product_id , P.title, round(P.price ,0) as price,PI.url as product_thumbnail ,C.id as category_id,C.name as category
-      from Store S join Product P on S.id = P.store_id join ProductImage PI on P.id = PI.product_id join Category C on C.id = P.category_id
-      where C.id=? and (P.title like ? or P.content like ?)  and S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES' and PI.status='ACTIVE'
-      ;
+  -- 카테고리 별 검색
+  select P.id as product_id ,S.id as store_id, S.store_name,P.title,round(P.price ,0) as price, PI.url as thumbnail,ifnull(x.likeCnt,0) as like_count,C.name as category
+  from Product P join ProductImage PI on P.id = PI.product_id
+      join Store S on S.id = P.store_id
+     left join (
+  select LI.item_id, count(*) likeCnt
+  from LikedItem LI
+  group by LI.item_id
+) x on x.item_id = P.id
+join Category C on P.category_id = C.id
+  where  S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES' and  C.id=? and (P.title like ? or P.content like ? or S.store_name like ?) 
+  order by like_count desc
+ ;
   
         `;
   const selectProductsByCategoryAndSearchRow = await connection.query(
     selectProductsByCategoryAndSearchQuery,
-    [categoryId, searchParams, searchParams]
+    [categoryId, searchParams, searchParams, searchParams]
   );
   return selectProductsByCategoryAndSearchRow[0];
 }
@@ -161,7 +198,7 @@ async function selectLikeInfo(connection) {
 async function selectRecommandProducts(connection, productList) {
   let Query = `
   -- 추천 상품 목록 조회
-  select P.id as product_id , P.store_id,S.store_name,P.title,PI.url as thumbnail,P.price, ifnull(x.likeCnt, 0) as like_count
+  select P.id as product_id , P.store_id,S.store_name,P.title,PI.url as thumbnail,P.price, ifnull(x.likeCnt, 0) as like_count,C.name as category
   from Product P
     left join (
         select LI.item_id, count(*) likeCnt
@@ -170,6 +207,7 @@ async function selectRecommandProducts(connection, productList) {
       ) x on x.item_id = P.id
       join Store S on P.store_id = S.id
       join ProductImage PI on P.id = PI.product_id
+      join Category C on P.category_id = C.id
   where P.status = 'ACTIVE' and P.id in (${productList}) and PI.is_thumbnail='YES'
   ORDER BY FIELD(P.id,${productList});
   -- FIELD 함수를 이용하여 특정한 값을 우선적으로 정렬할 수 있다.
@@ -178,7 +216,7 @@ async function selectRecommandProducts(connection, productList) {
 
   Query = `
   -- 추천 안된 상품 목록
-    select P.id as product_id , P.store_id,S.store_name,P.title,PI.url as thumbnail,P.price, ifnull(x.likeCnt, 0) as like_count
+    select P.id as product_id , P.store_id,S.store_name,P.title,PI.url as thumbnail,P.price, ifnull(x.likeCnt, 0) as like_count,C.name as category
     from Product P
       left join (
           select LI.item_id, count(*) likeCnt
@@ -187,6 +225,7 @@ async function selectRecommandProducts(connection, productList) {
         ) x on x.item_id = P.id
       join Store S on P.store_id = S.id
       join ProductImage PI on P.id = PI.product_id
+      join Category C on P.category_id = C.id
     where P.status = 'ACTIVE' and P.id not in (${productList}) and PI.is_thumbnail='YES'
     ORDER BY P.create_at desc;
   `;
