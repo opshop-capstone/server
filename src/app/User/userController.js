@@ -93,6 +93,10 @@ exports.payment = async function (req, res) {
   quantity = req.query.quantity; //총 주문 상품 개수
   total_price = req.query.total_price;
 
+  addressId = parseInt(addressId.replaceAll('"', ""));
+  quantity = parseInt(quantity.replaceAll('"', ""));
+  total_price = parseInt(total_price.replaceAll('"', ""));
+
   let headers = {
     Authorization: "KakaoAK " + "09de250ff665b14b4f0fbc5c136f0cf8", //카카오에서 생성한 인증키
     "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
@@ -119,16 +123,16 @@ exports.payment = async function (req, res) {
     form: params,
   };
 
-  let next_redirect_app_url;
+  let next_redirect_pc_url;
 
   request(options, function result(error, response, body) {
     if (!error && response.statusCode === 200) {
       console.log(JSON.parse(body)); //JSON.parse : JSON 문자열의 구문을 분석하고, 그 결과에서 JavaScript 값이나 객체를 생성
       //pc 테스트후 next_redirect_app_url 으로 변경!
-      next_redirect_app_url = JSON.parse(body).next_redirect_app_url;
+      next_redirect_pc_url = JSON.parse(body).next_redirect_pc_url;
       tid = JSON.parse(body).tid;
       console.log(userId, itemId, addressId, quantity, item_price);
-      return res.send(next_redirect_app_url); // redirect 하는 코드
+      return res.send(next_redirect_pc_url); // redirect 하는 코드
     } else console.log("결제 준비 실패");
   });
 };
@@ -161,8 +165,8 @@ exports.payment_success = async function (req, res) {
       const insertOrderResult = await userService.insertOrderResult(
         userId,
         itemId,
-        addressId,
-        quantity,
+        parseInt(addressId),
+        parseInt(quantity),
         item_price
       );
       // 결제완료 창으로 redirect되도록 만들예정
