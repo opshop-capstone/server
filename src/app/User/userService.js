@@ -154,7 +154,7 @@ exports.insertOrderResult = async function (
       const insertOrdersItem = await userDao.insertOrderItems(connection, [
         userId,
         itemIds[i],
-        each_prices[i],
+        item_prices[i],
         addressId,
       ]);
     }
@@ -162,12 +162,12 @@ exports.insertOrderResult = async function (
     for (let i = 0; i < quantity; i++) {
       const updateProductStatus = await userDao.updateProductStatusToSOLD(
         connection,
-        items[i]
+        itemIds[i]
       );
       const updateCartStatus = await userDao.updateCartStatusToDELETED(
         connection,
         userId,
-        items[i]
+        itemIds[i]
       );
     }
 
