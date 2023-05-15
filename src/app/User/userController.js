@@ -87,11 +87,11 @@ let userId, itemId, addressId, quantity, item_price, total_price;
 //결제 API
 exports.payment = async function (req, res) {
   userId = req.verifiedToken.userId; // jwt 토큰에서 받아오는 userId
-  itemId = req.body.itemId; //상품ID like ("1,2,3")
-  addressId = req.body.addressId; //고객이 설정한 address
-  item_price = req.body.item_price; // 제품 당 구매 당시 가격  like("1000,10000,")
-  quantity = req.body.quantity; //총 주문 상품 개수
-  total_price = req.body.total_price;
+  itemId = req.query.itemId; //상품ID like [1,2,3]
+  addressId = req.query.addressId; //고객이 설정한 address
+  item_price = req.query.item_price; // 제품 당 구매 당시 가격  like[1000,2000]
+  quantity = req.query.quantity; //총 주문 상품 개수
+  total_price = req.query.total_price;
 
   let headers = {
     Authorization: "KakaoAK " + "09de250ff665b14b4f0fbc5c136f0cf8", //카카오에서 생성한 인증키
