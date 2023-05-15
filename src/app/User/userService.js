@@ -133,12 +133,19 @@ exports.insertOrderResult = async function (
   const connection = await pool.getConnection(async (conn) => conn);
   try {
     connection.beginTransaction();
-    let item_list = itemIds.split(",").map(function (item) {
-      return parseInt(item, 10);
-    });
-    let price_list = item_prices.split(",").map(function (item) {
-      return parseInt(item, 10);
-    });
+    let item_list = itemIds
+      .replaceAll('"', "")
+      .split(",")
+      .map(function (item) {
+        return parseInt(item, 10);
+      });
+    let price_list = item_prices
+      .replaceAll('"', "")
+      .split(",")
+      .map(function (item) {
+        return parseInt(item, 10);
+      });
+    console.log(item_list);
 
     // 주문하려는 상품중에 품절상품 체크 벨리데이션
 
