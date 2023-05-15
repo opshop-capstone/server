@@ -13,6 +13,7 @@ exports.getLikeInfo = async function () {
 
 exports.getRecommandProducts = async function (productList) {
   const connection = await pool.getConnection(async (conn) => conn);
+
   const recommandProductsResult = await productDao.selectRecommandProducts(
     connection,
     productList

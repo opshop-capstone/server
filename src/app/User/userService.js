@@ -133,41 +133,46 @@ exports.insertOrderResult = async function (
   const connection = await pool.getConnection(async (conn) => conn);
   try {
     connection.beginTransaction();
+    let item_list = itemIds.split(",").map(function (item) {
+      return parseInt(item, 10);
+    });
+    let price_list = item_prices.split(",").map(function (item) {
+      return parseInt(item, 10);
+    });
 
     // 주문하려는 상품중에 품절상품 체크 벨리데이션
-    for (let i = 0; i < quantity; i++) {
-      const checkItemStatus = await userDao.checkItemStatus(
-        connection,
-        itemIds[i]
-      );
-      if (checkItemStatus.length == 0) {
-        return errResponse({
-          isSuccess: false,
-          code: 8001,
-          message:
-            "품절된 상품이 존재합니다. 상품확인 후 주문을 다시 진행해주세요",
-        });
-      }
+
+    const checkItemStatus = await userDao.checkItemStatus(
+      connection,
+      item_list
+    );
+    if (checkItemStatus.length != item_list.length) {
+      return errResponse({
+        isSuccess: false,
+        code: 8001,
+        message:
+          "품절된 상품이 존재합니다. 상품확인 후 주문을 다시 진행해주세요",
+      });
     }
 
-    for (let i = 0; i < itemIds.length; i++) {
+    for (let i = 0; i < item_list.length; i++) {
       const insertOrdersItem = await userDao.insertOrderItems(connection, [
         userId,
-        itemIds[i],
-        item_prices[i],
+        item_list[i],
+        price_list[i],
         addressId,
       ]);
     }
     //상품 상태를 업데이트하고 해당 상품을 장바구니 목록에서 비운다.
-    for (let i = 0; i < itemIds.length; i++) {
+    for (let i = 0; i < item_list.length; i++) {
       const updateProductStatus = await userDao.updateProductStatusToSOLD(
         connection,
-        itemIds[i]
+        item_list[i]
       );
       const updateCartStatus = await userDao.updateCartStatusToDELETED(
         connection,
         userId,
-        itemIds[i]
+        item_list[i]
       );
     }
 

@@ -118,16 +118,14 @@ async function updateOrderStatusToCANCEL(connection, user_id, order_id) {
   return updateOrderStatusToCANCELRow[0];
 }
 
-async function checkItemStatus(connection, itemId) {
+async function checkItemStatus(connection, item_list) {
   const checkItemStatusQuery = `
       -- 상품 상태 체크
       select id,status
       from Product
-      where status='ACTIVE' and id=?`;
-  const checkItemStatusRow = await connection.query(checkItemStatusQuery, [
-    itemId,
-  ]);
-  return checkItemStatusRow[0];
+      where status='ACTIVE' and id in (${item_list})`;
+  const checkItemStatusRow = await connection.query(checkItemStatusQuery);
+  return checkItemStatusRow;
 }
 
 module.exports = {
