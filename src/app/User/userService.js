@@ -150,7 +150,7 @@ exports.insertOrderResult = async function (
       }
     }
 
-    for (let i = 0; i < quantity; i++) {
+    for (let i = 0; i < itemIds.length; i++) {
       const insertOrdersItem = await userDao.insertOrderItems(connection, [
         userId,
         itemIds[i],
@@ -159,7 +159,7 @@ exports.insertOrderResult = async function (
       ]);
     }
     //상품 상태를 업데이트하고 해당 상품을 장바구니 목록에서 비운다.
-    for (let i = 0; i < quantity; i++) {
+    for (let i = 0; i < itemIds.length; i++) {
       const updateProductStatus = await userDao.updateProductStatusToSOLD(
         connection,
         itemIds[i]
