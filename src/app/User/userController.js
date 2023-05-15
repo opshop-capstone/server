@@ -133,7 +133,10 @@ exports.payment = async function (req, res) {
       tid = JSON.parse(body).tid;
       console.log(userId, itemId, addressId, quantity, item_price);
       return res.send(next_redirect_app_url); // redirect 하는 코드
-    } else console.log("결제 준비 실패");
+    } else {
+      console.log("결제 준비 실패");
+      return res.send(error);
+    }
   });
 };
 
