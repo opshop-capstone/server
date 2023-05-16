@@ -14,8 +14,8 @@ module.exports = function () {
 
   app.use(methodOverride());
 
-  //app.use(cors());
-  app.use(cors({ credentials: true, origin: "http://localhost:5000" }));
+  app.use(cors());
+  //app.use(cors({ credentials: true, origin: "http://localhost:5000" }));
 
   // app.use(express.static(process.cwd() + '/public'));
 
