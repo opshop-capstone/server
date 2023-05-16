@@ -93,9 +93,9 @@ exports.payment = async function (req, res) {
   quantity = req.query.quantity; //총 주문 상품 개수
   total_price = req.query.totalPrice;
 
-  // quantity = parseInt(quantity);
-  // addressId = parseInt(addressId);
-  // total_price = parseInt(total_price);
+  quantity = parseInt(quantity);
+  addressId = parseInt(addressId);
+  total_price = parseInt(total_price);
 
   let item_list = itemId.split(",").map(function (item) {
     return parseInt(item, 10);
@@ -104,7 +104,7 @@ exports.payment = async function (req, res) {
     return parseInt(item, 10);
   });
 
-  console.log(userId, item_list, addressId, quantity, price_list);
+  console.log(userId, item_list, addressId, quantity, price_list, total_price);
 
   let headers = {
     Authorization: "KakaoAK " + "09de250ff665b14b4f0fbc5c136f0cf8", //카카오에서 생성한 인증키
@@ -115,7 +115,7 @@ exports.payment = async function (req, res) {
     cid: "TC0ONETIME", // 테스트 코드
     partner_order_id: "1",
     partner_user_id: `${userId}`,
-    item_name: `오피샵`,
+    item_name: "오피샵",
     quantity: quantity,
     total_amount: total_price,
     vat_amount: 0,
