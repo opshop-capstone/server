@@ -48,7 +48,7 @@ exports.getStoreInfo = async function (storeId) {
   const connection = await pool.getConnection(async (conn) => conn);
   const storeInfo = await storeDao.selectStoreInfo(connection, storeId);
   connection.release();
-  return storeInfo[0];
+  return storeInfo;
 };
 
 exports.checkSubscribed = async function (userId, storeId) {
