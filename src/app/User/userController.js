@@ -96,18 +96,12 @@ exports.payment = async function (req, res) {
   addressId = parseInt(addressId);
   quantity = parseInt(quantity);
   total_price = parseInt(total_price);
-  let item_list = itemId
-    .replaceAll('"', "")
-    .split(",")
-    .map(function (item) {
-      return parseInt(item, 10);
-    });
-  let price_list = item_price
-    .replaceAll('"', "")
-    .split(",")
-    .map(function (item) {
-      return parseInt(item, 10);
-    });
+  let item_list = itemId.split(",").map(function (item) {
+    return parseInt(item, 10);
+  });
+  let price_list = item_price.split(",").map(function (item) {
+    return parseInt(item, 10);
+  });
 
   let headers = {
     Authorization: "KakaoAK " + "09de250ff665b14b4f0fbc5c136f0cf8", //카카오에서 생성한 인증키
