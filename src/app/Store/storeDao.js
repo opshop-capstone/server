@@ -1,7 +1,7 @@
 async function selectStoreList(connection) {
   const selectStoreListQuery = `
     -- 상점 리스트 조회 - 좋아요 + 구매 많은 순 
-    select S.id, S.store_name,S.store_image_url,ifnull(purchase.count,0) as purchase_count ,liked.count as like_count
+    select S.id, S.store_name,S.store_image_url,S.content,ifnull(purchase.count,0) as purchase_count ,liked.count as like_count
     from Store as S left join
     
     (select S.id as store_id,count(S.id) as count
@@ -65,7 +65,7 @@ async function selectStoreReviewsScore(connection, storeId) {
 
 async function selectStoreInfo(connection, storeId) {
   const selectStoreInfoQuery = `
-  -- 상품 정보
+  -- 상점 정보
   select S.id,S.store_name, S.tel,S.email,S.bussiness_code, SA.road_address, SA.detail_address,SA.zipcode
   from Store S join StoreAddress SA on S.id = SA.store_id
   where S.id=? and S.status='ACTIVE';
