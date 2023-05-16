@@ -140,6 +140,7 @@ exports.insertOrderResult = async function (
       connection,
       item_list
     );
+    console.log(checkItemStatus[0]);
     if (checkItemStatus.length != item_list.length) {
       return errResponse({
         isSuccess: false,
