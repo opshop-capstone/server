@@ -83,6 +83,7 @@ exports.check = async function (req, res) {
 // 결제
 let tid;
 let userId, itemId, addressId, quantity, item_price, total_price;
+let item_list, price_list;
 
 //결제 API
 exports.payment = async function (req, res) {
@@ -97,7 +98,7 @@ exports.payment = async function (req, res) {
   addressId = parseInt(addressId);
   total_price = parseInt(total_price);
 
-  let item_list = itemId.split(",").map(function (item) {
+  item_list = itemId.split(",").map(function (item) {
     return parseInt(item, 10);
   });
   let price_list = item_price.split(",").map(function (item) {
@@ -143,8 +144,8 @@ exports.payment = async function (req, res) {
       console.log(userId, item_list, addressId, quantity, price_list);
       return res.send(next_redirect_pc_url); // redirect 하는 코드
     } else {
-      console.log("결제 준비 실패");
       console.log(error);
+      console.log("결제 준비 실패");
     }
   });
 };
