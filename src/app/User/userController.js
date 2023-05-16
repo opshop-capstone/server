@@ -119,7 +119,7 @@ exports.payment = async function (req, res) {
     total_amount: total_price,
     vat_amount: 0,
     tax_free_amount: 0,
-    approval_url: "http://opshop.shop:3000/opshop/payment/approve",
+    approval_url: "http://opshop.shop/opshop/payment/approve",
     fail_url: "http://localhost:3000/opshop/payment/fail",
     cancel_url: "http://localhost:3000/opshop/payment/cancel",
   };
@@ -143,7 +143,6 @@ exports.payment = async function (req, res) {
       return res.send(next_redirect_app_url); // redirect 하는 코드
     } else {
       console.log("결제 준비 실패");
-      return res.send(error);
     }
   });
 };
