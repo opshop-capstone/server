@@ -93,9 +93,10 @@ exports.payment = async function (req, res) {
   quantity = req.query.quantity; //총 주문 상품 개수
   total_price = req.query.totalPrice;
 
-  addressId = parseInt(addressId);
-  quantity = parseInt(quantity);
-  total_price = parseInt(total_price);
+  // quantity = parseInt(quantity);
+  // addressId = parseInt(addressId);
+  // total_price = parseInt(total_price);
+
   let item_list = itemId.split(",").map(function (item) {
     return parseInt(item, 10);
   });
@@ -119,9 +120,9 @@ exports.payment = async function (req, res) {
     total_amount: total_price,
     vat_amount: 0,
     tax_free_amount: 0,
-    approval_url: "http://opshop.shop/opshop/payment/approve",
-    fail_url: "http://localhost:3000/opshop/payment/fail",
-    cancel_url: "http://localhost:3000/opshop/payment/cancel",
+    approval_url: "http://opshop.shop:3000/opshop/payment/approve",
+    fail_url: "http://opshop.shop:3000/opshop/payment/fail",
+    cancel_url: "http://opshop.shop:3000/opshop/payment/cancel",
   };
 
   let options = {
@@ -143,6 +144,7 @@ exports.payment = async function (req, res) {
       return res.send(next_redirect_app_url); // redirect 하는 코드
     } else {
       console.log("결제 준비 실패");
+      console.log(error);
     }
   });
 };
@@ -175,8 +177,8 @@ exports.payment_success = async function (req, res) {
       const insertOrderResult = await userService.insertOrderResult(
         userId,
         item_list,
-        addressId,
-        quantity,
+        parseInt(addressId),
+        parseInt(quantity),
         price_list
       );
       // 결제완료 창으로 redirect되도록 만들예정
