@@ -61,12 +61,13 @@ exports.getProductsList = async function (req, res) {
 exports.recommandProducts = async function (req, res) {
   const userId = req.verifiedToken.userId;
 
+  //모든 좋아요 정보를 가져온다.
   let likeInfoResult = await productProvider.getLikeInfo();
   likeInfoResult = Object.values(JSON.parse(JSON.stringify(likeInfoResult)));
 
   const cf = new CF(); //User-based CF 알고리즘
 
-  //사용자별 30개씩 추천한 후 ndcg를 계산
+  //해당 값이 설정되어 있을경우 일정양에 도달하면 멈추도록 설정하여 속도 개선이 가능하다.
   cf.maxRelatedItem = 10;
   cf.maxRelatedUser = 10;
 
@@ -77,10 +78,12 @@ exports.recommandProducts = async function (req, res) {
   let getRecommendResult = cf.recommendToUser(userId, 10);
   let productList = [];
 
+  //추천 상품 ID 리스트 생성
   for (let i = 0; i < getRecommendResult.length; i++) {
     productList.push(parseInt(getRecommendResult[i].itemId));
   }
 
+  //추천 상품 ID 리스트로 상품 정보 가져옴
   let recommandProductsResult = await productProvider.getRecommandProducts(
     productList
   );

@@ -1,3 +1,4 @@
 ./config/database.js
 ./config/secret.js
 log/
+yarn.lock
