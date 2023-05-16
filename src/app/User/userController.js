@@ -122,7 +122,7 @@ exports.payment = async function (req, res) {
     tax_free_amount: 0,
     approval_url: "http://opshop.shop:3000/opshop/payment/approve",
     fail_url: "http://opshop.shop:3000/opshop/payment/fail",
-    cancel_url: "http://opshop.shop:3000/opshop/payment/cancel",
+    cancel_url: "http://localhost:3000/opshop/payment/cancel",
   };
 
   let options = {
@@ -132,16 +132,16 @@ exports.payment = async function (req, res) {
     form: params,
   };
 
-  let next_redirect_app_url;
+  let next_redirect_pc_url;
 
   request(options, function result(error, response, body) {
     if (!error && response.statusCode === 200) {
       console.log(JSON.parse(body)); //JSON.parse : JSON 문자열의 구문을 분석하고, 그 결과에서 JavaScript 값이나 객체를 생성
       //pc 테스트후 next_redirect_app_url 으로 변경!
-      next_redirect_app_url = JSON.parse(body).next_redirect_app_url;
+      next_redirect_pc_url = JSON.parse(body).next_redirect_pc_url;
       tid = JSON.parse(body).tid;
       console.log(userId, item_list, addressId, quantity, price_list);
-      return res.send(next_redirect_app_url); // redirect 하는 코드
+      return res.send(next_redirect_pc_url); // redirect 하는 코드
     } else {
       console.log("결제 준비 실패");
       console.log(error);
