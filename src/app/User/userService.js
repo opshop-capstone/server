@@ -157,12 +157,14 @@ exports.insertOrderResult = async function (
         addressId,
       ]);
     }
+
     //상품 상태를 업데이트하고 해당 상품을 장바구니 목록에서 비운다.
     for (let i = 0; i < item_list.length; i++) {
       const updateProductStatus = await userDao.updateProductStatusToSOLD(
         connection,
         item_list[i]
       );
+
       const updateCartStatus = await userDao.updateCartStatusToDELETED(
         connection,
         userId,
