@@ -52,7 +52,7 @@ exports.getMyAddress = async function (userId) {
     userId
   );
   connection.release();
-  return userAddressResult[0];
+  return userAddressResult;
 };
 
 exports.getMyOrderList = async function (userId) {
