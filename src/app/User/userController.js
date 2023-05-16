@@ -93,9 +93,9 @@ exports.payment = async function (req, res) {
   quantity = req.query.quantity; //총 주문 상품 개수
   total_price = req.query.totalPrice;
 
-  addressId = parseInt(addressId.replaceAll('"', ""));
-  quantity = parseInt(quantity.replaceAll('"', ""));
-  total_price = parseInt(total_price.replaceAll('"', ""));
+  addressId = parseInt(addressId);
+  quantity = parseInt(quantity);
+  total_price = parseInt(total_price);
   let item_list = itemId
     .replaceAll('"', "")
     .split(",")
