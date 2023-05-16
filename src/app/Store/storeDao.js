@@ -23,7 +23,7 @@ async function selectStoreList(connection) {
 async function selectStoreProducts(connection, storeId) {
   const selectStoreProductsQuery = `
   -- 매장 방문 - 최신 등록 상품 순
-  select S.id as store_id ,P.id as product_id,PI.url as product_thumbnail , P.title
+  select S.id as store_id ,P.id as product_id,PI.url as product_thumbnail , P.title, round(P.price ,0) as price
   from Store S join Product P on S.id = P.store_id join ProductImage PI on P.id = PI.product_id
   where S.id=? and S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES' and PI.status='ACTIVE'
   order by P.create_at desc ;
@@ -66,7 +66,7 @@ async function selectStoreReviewsScore(connection, storeId) {
 async function selectStoreInfo(connection, storeId) {
   const selectStoreInfoQuery = `
   -- 상점 정보
-  select S.id,S.store_name, S.tel,S.email,S.bussiness_code, SA.road_address, SA.detail_address,SA.zipcode
+  select S.id,S.content,S.store_name, S.tel,S.email,S.bussiness_code, SA.road_address, SA.detail_address,SA.zipcode
   from Store S join StoreAddress SA on S.id = SA.store_id
   where S.id=? and S.status='ACTIVE';
   `;
