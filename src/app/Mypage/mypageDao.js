@@ -10,7 +10,7 @@ async function selectMypage(connection, userId) {
 async function selectUserAddress(connection, userId) {
   const selectUserAddressQuery = `
         -- 주소 목록 조회
-        select name, road_address, detail_address, zipcode,is_main
+        select id as address_id ,name, road_address, detail_address, zipcode,is_main
         from UserAddress
         where user_id=? and status ='ACTIVE';`;
   const selectUserAddressRow = await connection.query(
