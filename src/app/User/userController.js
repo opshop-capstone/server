@@ -103,6 +103,8 @@ exports.payment = async function (req, res) {
     return parseInt(item, 10);
   });
 
+  console.log(userId, item_list, addressId, quantity, price_list);
+
   let headers = {
     Authorization: "KakaoAK " + "09de250ff665b14b4f0fbc5c136f0cf8", //카카오에서 생성한 인증키
     "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
@@ -118,8 +120,8 @@ exports.payment = async function (req, res) {
     vat_amount: 0,
     tax_free_amount: 0,
     approval_url: "http://opshop.shop:3000/opshop/payment/approve",
-    fail_url: "http://opshop.shop:3000/opshop/payment/fail",
-    cancel_url: "http://opshop.shop:3000/opshop/payment/cancel",
+    fail_url: "http://localhost:3000/opshop/payment/fail",
+    cancel_url: "http://localhost:3000/opshop/payment/cancel",
   };
 
   let options = {
