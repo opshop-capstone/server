@@ -117,9 +117,9 @@ exports.payment = async function (req, res) {
     total_amount: total_price,
     vat_amount: 0,
     tax_free_amount: 0,
-    approval_url: "http://localhost:3000/opshop/payment/approve",
-    fail_url: "http://localhost:3000/opshop/payment/fail",
-    cancel_url: "http://localhost:3000/opshop/payment/cancel",
+    approval_url: "http://opshop.shop:3000/opshop/payment/approve",
+    fail_url: "http://opshop.shop:3000/opshop/payment/fail",
+    cancel_url: "http://opshop.shop:3000/opshop/payment/cancel",
   };
 
   let options = {
