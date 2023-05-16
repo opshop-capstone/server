@@ -7,7 +7,7 @@ module.exports = function (app) {
   app.get("/opshop/products/:productId", product.getProductDetail);
 
   // 카테고리 별 상품 조회 (카테고리 페이지)
-  app.get("/opshop/categorys", product.getCategoryPage);
+  app.get("/opshop/categories", product.getCategoryPage);
 
   // 인기 상품 조회 + 검색 필터링
   app.get("/opshop/products", product.getProductsList);
