@@ -61,3 +61,37 @@ exports.checkSubscribed = async function (userId, storeId) {
   connection.release();
   return checkSubscribeResult;
 };
+
+exports.checkStore = async function (userId, storeId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const checkStoreResult = await storeDao.checkStore(
+    connection,
+    userId,
+    storeId
+  );
+  connection.release();
+
+  return checkStoreResult;
+};
+
+exports.getOrderedList = async function (storeId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const getOrderedListResult = await storeDao.selectOrderedListForStore(
+    connection,
+    storeId
+  );
+  connection.release();
+
+  return getOrderedListResult;
+};
+
+exports.getOrderedDetail = async function (orderId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const getOrderedDetailResult = await storeDao.selectOrderedDetailForStore(
+    connection,
+    orderId
+  );
+  connection.release();
+
+  return getOrderedDetailResult;
+};

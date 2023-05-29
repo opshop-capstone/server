@@ -209,8 +209,8 @@ exports.registerProduct = async function (req, res) {
  */
 exports.editProduct = async function (req, res) {
   const userId = req.verifiedToken.userId;
-  const productId = req.query.productId;
-  const storeId = req.query.storeId;
+  const productId = req.params.productId;
+  const storeId = req.params.storeId;
   const { title, price, content, categoryId, size } = req.body;
 
   const editProductsResult = await productService.editProduct(
@@ -230,8 +230,8 @@ exports.editProduct = async function (req, res) {
 //사진 등록
 exports.insertProductImage = async function (req, res) {
   const userId = req.verifiedToken.userId;
-  const productId = req.query.productId;
-  const storeId = req.query.storeId;
+  const productId = req.params.productId;
+  const storeId = req.params.storeId;
   const product_image_url = req.body.product_image_url;
 
   if (!product_image_url)
@@ -256,8 +256,8 @@ exports.insertProductImage = async function (req, res) {
 //사진 삭제
 exports.deleteProductImage = async function (req, res) {
   const userId = req.verifiedToken.userId;
-  const productId = req.query.productId;
-  const storeId = req.query.storeId;
+  const productId = req.params.productId;
+  const storeId = req.params.storeId;
   const product_image_url = req.body.product_image_url;
 
   if (!product_image_url)

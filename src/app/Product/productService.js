@@ -139,11 +139,11 @@ exports.editProduct = async function (
         message: "상점 사장님이 아니세요.",
       });
     }
-    updateParams = [title, price, content, categoryId, size];
+
     const updateProduct = await productDao.updateProduct(
       connection,
       productId,
-      updateParams
+      [title, price, content, categoryId, size]
     );
 
     connection.commit();
@@ -226,6 +226,7 @@ exports.deleteProductImage = async function (
     }
 
     url_arr = product_image_url.split(",");
+
     const deleteProductImage = await productDao.deleteProductImage(
       connection,
       productId,

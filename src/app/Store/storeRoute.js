@@ -34,5 +34,18 @@ module.exports = function (app) {
 
   //상점 수정
   app.post("/opshop/store-edit", jwtMiddleware, store.storeEdit);
-  // 상점 삭제
+  // 주문된 상품 리스트 확인
+  app.get(
+    "/opshop/stores/:storeId/ordered-list",
+    jwtMiddleware,
+    store.storeGetOrderedList
+  );
+  // 주문 상품 상세 확인
+  app.get(
+    "/opshop/stores/:storeId/ordered-detail/:orderId",
+    jwtMiddleware,
+    store.storeGetOrderedDetail
+  );
+
+  // 주문 상품 상태 변경
 };

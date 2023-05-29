@@ -176,6 +176,49 @@ async function updateStore(
   return updateStoreRow[0];
 }
 
+async function checkStore(connection, userId, storeId) {
+  const checkStoreQuery = `
+    select id
+    from Store
+    where owner_id=? and id=? and status='ACTIVE'
+    `;
+  const checkStoreRow = await connection.query(checkStoreQuery, [
+    userId,
+    storeId,
+  ]);
+  return checkStoreRow[0];
+}
+
+async function selectOrderedListForStore(connection, storeId) {
+  const selectOrderedListForStoreQuery = `
+  -- 주문된 상품 리스트 확인 
+    select OI.id as order_id,date_format(OI.create_at,'%Y-%m-%d %H:%i') as order_date,U.name as orderer , P.id as product_id , P.title,P.price
+    from OrderItem OI join Product P on OI.product_id = P.id join Store S on P.store_id = S.id join User U on OI.user_id = U.id
+    where S.id=?
+    order by order_date desc;
+    `;
+  const selectOrderedListForStoreRow = await connection.query(
+    selectOrderedListForStoreQuery,
+    [storeId]
+  );
+  return selectOrderedListForStoreRow[0];
+}
+
+async function selectOrderedDetailForStore(connection, orderId) {
+  const selectOrderedDetailForStoreQuery = `
+  -- 주문된 상품 상세내역
+  select OI.id as order_id, date_format(OI.create_at,'%Y-%m-%d %H:%i') as order_date, OI.status , U.name as orderer, UA.name as address_name, UA.road_address ,UA.detail_address,S.id as store_id, P.id as product_id , P.title,P.price
+  from OrderItem OI join Product P on OI.product_id = P.id join Store S on P.store_id = S.id join UserAddress UA on OI.address_id = UA.id
+      join User U on OI.user_id = U.id
+  where OI.id=?
+    
+    `;
+  const selectOrderedDetailForStoreRow = await connection.query(
+    selectOrderedDetailForStoreQuery,
+    [orderId]
+  );
+  return selectOrderedDetailForStoreRow[0];
+}
 module.exports = {
   selectStoreProducts,
   selectStoreReviews,
@@ -189,4 +232,7 @@ module.exports = {
   checkOwner,
   insertStore,
   updateStore,
+  checkStore,
+  selectOrderedListForStore,
+  selectOrderedDetailForStore,
 };

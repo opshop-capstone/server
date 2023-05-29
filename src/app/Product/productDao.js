@@ -271,28 +271,30 @@ async function insertProductImage(
     query += `,(${productId},"${url_arr[i]}",'NO')`;
   }
   const insertProductQuery = query + ";";
+
   const insertProductImageRow = await connection.query(insertProductQuery);
   return insertProductImageRow[0];
 }
 
-async function updateProduct(connection, productId, updateParams) {
+async function updateProduct(
+  connection,
+  productId,
+  [title, price, content, categoryId, size]
+) {
   const updateProductQuery = `
-      update Product set title=?,price=?,content=?,categoryId=?,size=? where id=${productId}; 
+      update Product set title=if("${title}"="",title,"${title}"),price=if("${price}"="",price,"${price}"),content=if("${content}"="",content,"${content}"),category_id=if("${categoryId}"="",category_id,"${categoryId}"),size=if("${size}"="",size,"${size}") where id=${productId}; 
                 `;
 
-  const updateProductRow = await connection.query(
-    updateProductQuery,
-    updateParams
-  );
+  const updateProductRow = await connection.query(updateProductQuery);
   return updateProductRow[0];
 }
 
 async function insertOnlyProductImage(connection, productId, url_arr) {
   let query = `insert into ProductImage (product_id,url,is_thumbnail) values 
-                (${productId},${url_arr[0]},'NO')`;
+                (${productId},"${url_arr[0]}",'NO')`;
 
   for (let i = 1; i < url_arr.length; i++) {
-    query += `,(${productId},${url_arr[i]},'NO')`;
+    query += `,(${productId},"${url_arr[i]}",'NO')`;
   }
   const insertProductQuery = query + ";";
   const insertProductImageRow = await connection.query(insertProductQuery);
@@ -300,12 +302,13 @@ async function insertOnlyProductImage(connection, productId, url_arr) {
 }
 
 async function deleteProductImage(connection, productId, url_arr) {
-  const deleteProductImageQuery = `delete from ProductImage where product_id=? and url in (${url_arr})`;
+  let query = `delete from ProductImage where product_id=${productId} and url in ("${url_arr[0]}"`;
+  for (let i = 1; i < url_arr.length; i++) {
+    query += `,"${url_arr[i]}"`;
+  }
 
-  const deleteProductImageRow = await connection.query(
-    deleteProductImageQuery,
-    productId
-  );
+  const deleteProductImageQuery = query + `);`;
+  const deleteProductImageRow = await connection.query(deleteProductImageQuery);
   return deleteProductImageRow[0];
 }
 

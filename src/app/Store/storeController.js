@@ -243,3 +243,75 @@ exports.storeEdit = async function (req, res) {
 
   return res.send(storeRegisterResult);
 };
+
+/**
+ * 상점용: 해당 상점의 구매 목록 조회
+ */
+exports.storeGetOrderedList = async function (req, res) {
+  const storeId = req.params.storeId;
+  const userId = req.verifiedToken.userId;
+
+  if (!storeId) {
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 802,
+        message: "상점ID를 입력해주세요.",
+      })
+    );
+  }
+  const checkStore = await storeProvider.checkStore(userId, storeId);
+  if (checkStore.length == 0) {
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 802,
+        message: "상점 주인 인증 실패",
+      })
+    );
+  } else {
+    const getOrderedList = await storeProvider.getOrderedList(storeId);
+    return res.send(response(baseResponse.SUCCESS, getOrderedList));
+  }
+};
+
+/**
+ * 상점용: 해당 상점의 상세 주문 내역
+ */
+exports.storeGetOrderedDetail = async function (req, res) {
+  const storeId = req.params.storeId;
+  const userId = req.verifiedToken.userId;
+  const orderId = req.params.orderId;
+
+  if (!storeId) {
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 802,
+        message: "상점ID를 입력해주세요.",
+      })
+    );
+  }
+  if (!orderId) {
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 802,
+        message: "주문ID를 입력해주세요.",
+      })
+    );
+  }
+  const checkStore = await storeProvider.checkStore(userId, storeId);
+  if (checkStore.length == 0) {
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 802,
+        message: "상점 주인 인증 실패",
+      })
+    );
+  } else {
+    const getOrderedDetail = await storeProvider.getOrderedDetail(orderId);
+    return res.send(response(baseResponse.SUCCESS, getOrderedDetail));
+  }
+};
