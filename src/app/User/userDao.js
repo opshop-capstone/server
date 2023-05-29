@@ -23,6 +23,23 @@ async function insertUserInfo(connection, insertUserInfoParams) {
   return insertUserInfoRow;
 }
 
+// 상점 주인 생성
+async function insertUserForOwnerInfo(
+  connection,
+  insertUserForOwnerInfoParams
+) {
+  const insertUserInfoQuery = `
+        INSERT INTO User (email, password, name,type)
+        VALUES (?, ?, ?,'OWNER');
+    `;
+  const insertUserInfoRow = await connection.query(
+    insertUserInfoQuery,
+    insertUserForOwnerInfoParams
+  );
+
+  return insertUserInfoRow;
+}
+
 // 패스워드 체크
 async function selectUserPassword(connection, selectUserPasswordParams) {
   const selectUserPasswordQuery = `
@@ -139,4 +156,5 @@ module.exports = {
   updateProductStatusToSOLD,
   updateCartStatusToDELETED,
   updateOrderStatusToCANCEL,
+  insertUserForOwnerInfo,
 };

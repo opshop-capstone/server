@@ -62,5 +62,5 @@ exports.getMyOrderList = async function (userId) {
     userId
   );
   connection.release();
-  return myOrderListResult[0];
+  return myOrderListResult;
 };

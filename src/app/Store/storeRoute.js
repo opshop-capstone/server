@@ -24,4 +24,15 @@ module.exports = function (app) {
     jwtMiddleware,
     store.postStoreReview
   );
+
+  /**
+   * 상점용
+   */
+
+  // 상점 등록
+  app.post("/opshop/store-register", jwtMiddleware, store.storeRegister);
+
+  //상점 수정
+  app.post("/opshop/store-edit", jwtMiddleware, store.storeEdit);
+  // 상점 삭제
 };

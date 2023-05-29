@@ -117,3 +117,15 @@ exports.checkLiked = async function (userId, productId) {
 
   return checkLikedResult;
 };
+
+exports.checkStore = async function (userId, storeId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const checkStoreResult = await productDao.checkStore(
+    connection,
+    userId,
+    storeId
+  );
+  connection.release();
+
+  return checkStoreResult;
+};

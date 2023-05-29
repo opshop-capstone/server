@@ -87,3 +87,91 @@ exports.postStoreSubscribe = async function (userId, storeId) {
     connection.release();
   }
 };
+
+exports.createStore = async function (
+  owner_id,
+  store_name,
+  content,
+  tel,
+  email,
+  bussiness_code,
+  store_image_url
+) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    connection.beginTransaction();
+
+    const isOwner = await storeDao.checkOwner(connection, owner_id);
+    if (!isOwner) {
+      return response({
+        isSuccess: false,
+        code: 920,
+        message: "상점 주인 인증 단계를 먼저 거치세요. ",
+      });
+    }
+
+    const insertStore = await storeDao.insertStore(connection, [
+      owner_id,
+      store_name,
+      content,
+      tel,
+      email,
+      bussiness_code,
+      store_image_url,
+    ]);
+    console.log(`추가된 상점: ${insertStore.insertId}`);
+
+    connection.commit();
+    return response(baseResponse.SUCCESS, {
+      new_store_id: insertStore.insertId,
+    });
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - createStore Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
+
+exports.editStore = async function (
+  owner_id,
+  store_name,
+  content,
+  tel,
+  email,
+  store_image_url
+) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    connection.beginTransaction();
+
+    const isOwner = await storeDao.checkOwner(connection, owner_id);
+    if (!isOwner) {
+      return response({
+        isSuccess: false,
+        code: 920,
+        message: "상점 주인 인증 단계를 먼저 거치세요. ",
+      });
+    }
+
+    const editStore = await storeDao.updateStore(
+      connection,
+      owner_id,
+      store_name,
+      content,
+      tel,
+      email,
+      store_image_url
+    );
+
+    connection.commit();
+    return response(baseResponse.SUCCESS);
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - editStore Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};

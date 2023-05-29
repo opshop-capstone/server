@@ -53,3 +53,196 @@ exports.postLiked = async function (userId, productId) {
     connection.release();
   }
 };
+
+// 상품 등록
+exports.createProduct = async function (
+  userId,
+  storeId,
+  title,
+  price,
+  content,
+  categoryId,
+  size,
+  thumbnail_image_url,
+  product_image_url
+) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    connection.beginTransaction();
+
+    const checkStore = await productProvider.checkStore(userId, storeId);
+    if (!checkStore) {
+      return response({
+        isSuccess: false,
+        code: 2000,
+        message: "상점 사장님이 아니세요.",
+      });
+    }
+    const insertProductParams = [
+      storeId,
+      title,
+      price,
+      content,
+      categoryId,
+      size,
+    ];
+    const insertProduct = await productDao.insertProduct(
+      connection,
+      insertProductParams
+    );
+
+    url_arr = product_image_url.split(",");
+
+    const insertProductImage = await productDao.insertProductImage(
+      connection,
+      insertProduct.insertId,
+      thumbnail_image_url,
+      url_arr
+    );
+    connection.commit();
+
+    return response(
+      { isSuccess: true, code: 1000, message: "상품 등록 성공" },
+      {
+        new_product_id: insertProduct.insertId,
+      }
+    );
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - insertProduct Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
+
+// 상품 수정
+exports.editProduct = async function (
+  userId,
+  storeId,
+  productId,
+  title,
+  price,
+  content,
+  categoryId,
+  size
+) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    connection.beginTransaction();
+
+    const checkStore = await productProvider.checkStore(userId, storeId);
+    if (!checkStore) {
+      return response({
+        isSuccess: false,
+        code: 2000,
+        message: "상점 사장님이 아니세요.",
+      });
+    }
+    updateParams = [title, price, content, categoryId, size];
+    const updateProduct = await productDao.updateProduct(
+      connection,
+      productId,
+      updateParams
+    );
+
+    connection.commit();
+
+    return response({
+      isSuccess: true,
+      code: 1000,
+      message: "상품 내용 수정 성공",
+    });
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App -updateProduct Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
+
+// 상품 이미지 등록
+exports.insertProductImage = async function (
+  userId,
+  storeId,
+  productId,
+  product_image_url
+) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    connection.beginTransaction();
+
+    const checkStore = await productProvider.checkStore(userId, storeId);
+    if (!checkStore) {
+      return response({
+        isSuccess: false,
+        code: 2000,
+        message: "상점 사장님이 아니세요.",
+      });
+    }
+
+    url_arr = product_image_url.split(",");
+
+    const insertProductImage = await productDao.insertOnlyProductImage(
+      connection,
+      productId,
+      url_arr
+    );
+    connection.commit();
+
+    return response({
+      isSuccess: true,
+      code: 1000,
+      message: "이미지 추가 성공",
+    });
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - insertProductImage Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
+
+// 상품 이미지 제거
+exports.deleteProductImage = async function (
+  userId,
+  storeId,
+  productId,
+  product_image_url
+) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    connection.beginTransaction();
+
+    const checkStore = await productProvider.checkStore(userId, storeId);
+    if (!checkStore) {
+      return response({
+        isSuccess: false,
+        code: 2000,
+        message: "상점 사장님이 아니세요.",
+      });
+    }
+
+    url_arr = product_image_url.split(",");
+    const deleteProductImage = await productDao.deleteProductImage(
+      connection,
+      productId,
+      url_arr
+    );
+    connection.commit();
+
+    return response({
+      isSuccess: true,
+      code: 1000,
+      message: "이미지 제거 성공",
+    });
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - deleteProductImage Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};

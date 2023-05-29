@@ -109,3 +109,172 @@ exports.postLiked = async function (req, res) {
   const LikedProduct = await productService.postLiked(userId, productId);
   return res.send(LikedProduct);
 };
+
+/**
+ * 상점용:
+ * 스토어의 상품 등록
+ */
+exports.registerProduct = async function (req, res) {
+  const userId = req.verifiedToken.userId;
+  const storeId = req.params.storeId;
+  const {
+    title,
+    price,
+    content,
+    categoryId,
+    size,
+    thumbnail_image_url,
+    product_image_url,
+  } = req.body;
+
+  if (!storeId)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 380,
+        message: "스토어 아이디를 입력해주세요.",
+      })
+    );
+  if (!title)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 380,
+        message: "상품명을 입력해주세요.",
+      })
+    );
+  if (!price)
+    return res.send(
+      response({ isSuccess: false, code: 380, message: "가격을 입력해주세요." })
+    );
+  if (!content)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 380,
+        message: "상세 내용을 입력해주세요.",
+      })
+    );
+  if (!categoryId)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 380,
+        message: "카테고리를 선택해주세요.",
+      })
+    );
+  if (!size)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 380,
+        message: "사이즈를 입력해주세요.",
+      })
+    );
+  if (!product_image_url)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 380,
+        message: "이미지 Url을 입력해주세요.",
+      })
+    );
+  if (!thumbnail_image_url)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 380,
+        message: "썸네일 이미지를 입력해주세요.",
+      })
+    );
+
+  const registerProductsResult = await productService.createProduct(
+    userId,
+    storeId,
+    title,
+    price,
+    content,
+    categoryId,
+    size,
+    thumbnail_image_url,
+    product_image_url
+  );
+
+  return res.send(registerProductsResult);
+};
+
+/**
+ * 상점용:
+ * 상품 수정(내용만)
+ */
+exports.editProduct = async function (req, res) {
+  const userId = req.verifiedToken.userId;
+  const productId = req.query.productId;
+  const storeId = req.query.storeId;
+  const { title, price, content, categoryId, size } = req.body;
+
+  const editProductsResult = await productService.editProduct(
+    userId,
+    storeId,
+    productId,
+    title,
+    price,
+    content,
+    categoryId,
+    size
+  );
+
+  return res.send(editProductsResult);
+};
+
+//사진 등록
+exports.insertProductImage = async function (req, res) {
+  const userId = req.verifiedToken.userId;
+  const productId = req.query.productId;
+  const storeId = req.query.storeId;
+  const product_image_url = req.body.product_image_url;
+
+  if (!product_image_url)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 380,
+        message: "이미지 url을 입력해주세요.",
+      })
+    );
+
+  const insertProductImageResult = await productService.insertProductImage(
+    userId,
+    storeId,
+    productId,
+    product_image_url
+  );
+
+  return res.send(insertProductImageResult);
+};
+
+//사진 삭제
+exports.deleteProductImage = async function (req, res) {
+  const userId = req.verifiedToken.userId;
+  const productId = req.query.productId;
+  const storeId = req.query.storeId;
+  const product_image_url = req.body.product_image_url;
+
+  if (!product_image_url)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 380,
+        message: "삭제할 이미지 url을 입력해주세요.",
+      })
+    );
+
+  const deleteProductImageResult = await productService.deleteProductImage(
+    userId,
+    storeId,
+    productId,
+    product_image_url
+  );
+
+  return res.send(deleteProductImageResult);
+};

@@ -13,6 +13,7 @@ const { connect } = require("http2");
 
 // Service: Create, Update, Delete 비즈니스 로직 처리
 
+//사용자 회원가입
 exports.createUser = async function (email, password, nickname) {
   try {
     // 이메일 중복 확인
@@ -39,6 +40,37 @@ exports.createUser = async function (email, password, nickname) {
     return response(baseResponse.SUCCESS);
   } catch (err) {
     logger.error(`App - createUser Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  }
+};
+
+//상점 주인 회원가입
+exports.createUserForOwner = async function (email, password, nickname) {
+  try {
+    // 이메일 중복 확인
+    const emailRows = await userProvider.emailCheck(email);
+    if (emailRows.length > 0)
+      return errResponse(baseResponse.SIGNUP_REDUNDANT_EMAIL);
+
+    // 비밀번호 암호화
+    const hashedPassword = await crypto
+      .createHash("sha512")
+      .update(password)
+      .digest("hex");
+
+    const insertOwnerInfoParams = [email, hashedPassword, nickname];
+
+    const connection = await pool.getConnection(async (conn) => conn);
+
+    const userIdResult = await userDao.insertUserForOwnerInfo(
+      connection,
+      insertOwnerInfoParams
+    );
+    console.log(`추가된 회원 : ${userIdResult[0].insertId}`);
+    connection.release();
+    return response(baseResponse.SUCCESS);
+  } catch (err) {
+    logger.error(`App - createUserForOwner Service error\n: ${err.message}`);
     return errResponse(baseResponse.DB_ERROR);
   }
 };

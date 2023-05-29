@@ -90,7 +90,7 @@ exports.getMyReviewList = async function (req, res) {
 /**
  * 주문 내역 목록 조회
  */
-exports.getMyReviewList = async function (req, res) {
+exports.getMyOrderList = async function (req, res) {
   const userId = req.verifiedToken.userId;
 
   const getMyOrderList = await mypageProvider.getMyOrderList(userId);

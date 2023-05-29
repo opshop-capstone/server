@@ -22,5 +22,5 @@ module.exports = function (app) {
   app.post("/opshop/mypage/address", jwtMiddleware, mypage.postMyAddress);
 
   //나의 주문 내역 - 만들어!
-  //app.get("/opshop/mypage/orders", jwtMiddleware, mypage.getMyOrderList);
+  app.get("/opshop/mypage/orders", jwtMiddleware, mypage.getMyOrderList);
 };

@@ -41,10 +41,10 @@ async function insertAddress(
 async function selectLikedList(connection, userId) {
   const selectLikedListQuery = `
         -- 좋아요 한 상품 리스트
-        select LI.user_id , P.id as product_id, S.id as store_id , S.store_name, PI.url as product_thumbnail , P.title,round(P.price ,0) as price
+        select LI.user_id , P.id as product_id, S.id as store_id , S.store_name, PI.url as product_thumbnail , P.title,round(P.price ,0) as price,if(P.status='ACTIVE','SALE','SOLDOUT') as status
         from   Store S join Product P on S.id = P.store_id join ProductImage PI on P.id = PI.product_id
         join LikedItem LI on P.id = LI.item_id
-        where LI.user_id = ?  and LI.status='ACTIVE' and  S.status='ACTIVE' and P.status='ACTIVE' and PI.is_thumbnail='YES' and PI.status='ACTIVE'
+        where LI.user_id = ?  and LI.status='ACTIVE' and  S.status='ACTIVE' and PI.is_thumbnail='YES' and PI.status='ACTIVE'
         ;
          `;
   const selectLikedListRow = await connection.query(
@@ -96,12 +96,14 @@ async function selectMyDetailReview(connection, reviewId) {
 
 //수정해
 async function selectMyOrderList(connection, userId) {
-  const selectMyOrderListwQuery = `
-        -- 주문 내역 목록 조회 
-        select oi.id as order_id,P.title,oi.price, PI.url as thumbnail ,date_format(oi.create_at,'%Y/%m/%d') as order_date, oi.status
-        from User user join OrderItem oi on oi.user_id = user.id join Product P on oi.product_id = P.id
-        join ProductImage PI on P.id = PI.product_id
-        where user.id= ? and 
+  const selectMyOrderListQuery = `
+        -- 주문 내역 목록 조회
+        select OI.id as order_id, OI.product_id , P.title as product_name, OI.price,date_format(OI.update_at,'%Y/%m/%d') as date ,(case when OI.status='PREPARE' then '배송준비중' when OI.status='DELIVERING' then '배송중'
+        when OI.status='DELIVERED' then '배송완료' when OI.status='CANCELING' then '주문 취소중' when OI.status='CANCELED' then '취소완료' else '확인중' end) as status
+        from OrderItem OI join User U on OI.user_id = U.id
+        join Product P on OI.product_id = P.id
+        where user_id=1 
+        order by date desc; -- 최신순
            `;
   const selectMyOrderListRow = await connection.query(
     selectMyOrderListQuery,
@@ -117,4 +119,5 @@ module.exports = {
   selectSubscribeList,
   selectMyReviewList,
   selectMyDetailReview,
+  selectMyOrderList,
 };

@@ -2,6 +2,7 @@ const jwtMiddleware = require("../../../config/jwtMiddleware");
 const storeProvider = require("./storeProvider");
 const storeService = require("./storeService");
 const baseResponse = require("../../../config/baseResponseStatus");
+const regexEmail = require("regex-email");
 const { response, errResponse } = require("../../../config/response");
 
 const { emit } = require("nodemon");
@@ -100,4 +101,145 @@ exports.postSubscribe = async function (req, res) {
     );
     return res.send(storeSubscribe);
   }
+};
+
+/**
+ * 상점 등록
+ */
+exports.storeRegister = async function (req, res) {
+  const userId = req.verifiedToken.userId;
+  const { store_name, content, tel, email, bussiness_code, store_image_url } =
+    req.body;
+
+  // 빈 값 체크
+  if (!store_name)
+    return res.send(
+      response({ isSuccess: false, code: 900, message: "상점명 입력해주세요" })
+    );
+  if (!content)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 900,
+        message: "상점 설명을 입력해주세요",
+      })
+    );
+  if (!tel)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 900,
+        message: "전화번호를 입력해주세요",
+      })
+    );
+  if (!email)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 900,
+        message: "이메일을 입력해주세요",
+      })
+    );
+  if (!bussiness_code)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 900,
+        message: "사업자번호를 입력해주세요",
+      })
+    );
+  if (!store_image_url)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 900,
+        message: "썸네일 이미지를 입력해주세요",
+      })
+    );
+
+  // 길이 체크
+  if (email.length > 30)
+    return res.send(response(baseResponse.SIGNUP_EMAIL_LENGTH));
+
+  // 형식 체크 (by 정규표현식)
+  if (!regexEmail.test(email))
+    return res.send(response(baseResponse.SIGNUP_EMAIL_ERROR_TYPE));
+
+  //type 값이 있는 경우
+  const storeRegisterResult = await storeService.createStore(
+    userId,
+    store_name,
+    content,
+    tel,
+    email,
+    bussiness_code,
+    store_image_url
+  );
+
+  return res.send(storeRegisterResult);
+};
+
+//상점 수정
+
+exports.storeEdit = async function (req, res) {
+  const userId = req.verifiedToken.userId;
+  const { store_name, content, tel, email, store_image_url } = req.body;
+
+  // 빈 값 체크
+  if (!store_name)
+    return res.send(
+      response({ isSuccess: false, code: 900, message: "상점명 입력해주세요" })
+    );
+  if (!content)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 900,
+        message: "상점 설명을 입력해주세요",
+      })
+    );
+  if (!tel)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 900,
+        message: "전화번호를 입력해주세요",
+      })
+    );
+  if (!email)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 900,
+        message: "이메일을 입력해주세요",
+      })
+    );
+
+  if (!store_image_url)
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 900,
+        message: "썸네일 이미지를 입력해주세요",
+      })
+    );
+
+  // 길이 체크
+  if (email.length > 30)
+    return res.send(response(baseResponse.SIGNUP_EMAIL_LENGTH));
+
+  // 형식 체크 (by 정규표현식)
+  if (!regexEmail.test(email))
+    return res.send(response(baseResponse.SIGNUP_EMAIL_ERROR_TYPE));
+
+  const storeEditResult = await storeService.editStore(
+    userId,
+    store_name,
+    content,
+    tel,
+    email,
+    store_image_url
+  );
+
+  return res.send(storeRegisterResult);
 };

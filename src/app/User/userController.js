@@ -22,9 +22,9 @@ const request = require("request");
  */
 exports.postUsers = async function (req, res) {
   /**
-   * Body: email, password, nickname
+   * Body: email, password, nickname,type
    */
-  const { email, password, nickname } = req.body;
+  const { email, password, nickname, type } = req.body;
 
   // 빈 값 체크
   if (!email) return res.send(response(baseResponse.SIGNUP_EMAIL_EMPTY));
@@ -37,13 +37,25 @@ exports.postUsers = async function (req, res) {
   if (!regexEmail.test(email))
     return res.send(response(baseResponse.SIGNUP_EMAIL_ERROR_TYPE));
 
-  const signUpResponse = await userService.createUser(
-    email,
-    password,
-    nickname
-  );
+  if (type) {
+    //type 값이 있는 경우
+    const signUpResponse = await userService.createUserForOwner(
+      email,
+      password,
+      nickname,
+      type
+    );
 
-  return res.send(signUpResponse);
+    return res.send(signUpResponse);
+  } else {
+    const signUpResponse = await userService.createUser(
+      email,
+      password,
+      nickname
+    );
+
+    return res.send(signUpResponse);
+  }
 };
 
 // TODO: After 로그인 인증 방법 (JWT)

@@ -234,6 +234,81 @@ async function selectRecommandProducts(connection, productList) {
   return productsRow;
 }
 
+async function checkStore(connection, userId, storeId) {
+  const checkStoreQuery = `
+    select id
+    from Store
+    where owner_id=? and id=? and status='ACTIVE'
+    `;
+  const checkStoreRow = await connection.query(checkStoreQuery, [
+    userId,
+    storeId,
+  ]);
+  return checkStoreRow[0];
+}
+
+async function insertProduct(connection, insertProductParams) {
+  const insertProductQuery = `
+      insert into Product (store_id,title,price,content,category_id,size) values(?,?,?,?,?,?);
+  `;
+  const insertProductRow = await connection.query(
+    insertProductQuery,
+    insertProductParams
+  );
+  return insertProductRow[0];
+}
+
+async function insertProductImage(
+  connection,
+  productId,
+  thumbnail_image_url,
+  url_arr
+) {
+  let query = `insert into ProductImage (product_id,url,is_thumbnail) values 
+                (${productId},"${thumbnail_image_url}",'YES')`;
+
+  for (let i = 0; i < url_arr.length; i++) {
+    query += `,(${productId},"${url_arr[i]}",'NO')`;
+  }
+  const insertProductQuery = query + ";";
+  const insertProductImageRow = await connection.query(insertProductQuery);
+  return insertProductImageRow[0];
+}
+
+async function updateProduct(connection, productId, updateParams) {
+  const updateProductQuery = `
+      update Product set title=?,price=?,content=?,categoryId=?,size=? where id=${productId}; 
+                `;
+
+  const updateProductRow = await connection.query(
+    updateProductQuery,
+    updateParams
+  );
+  return updateProductRow[0];
+}
+
+async function insertOnlyProductImage(connection, productId, url_arr) {
+  let query = `insert into ProductImage (product_id,url,is_thumbnail) values 
+                (${productId},${url_arr[0]},'NO')`;
+
+  for (let i = 1; i < url_arr.length; i++) {
+    query += `,(${productId},${url_arr[i]},'NO')`;
+  }
+  const insertProductQuery = query + ";";
+  const insertProductImageRow = await connection.query(insertProductQuery);
+  return insertProductImageRow[0];
+}
+
+async function deleteProductImage(connection, productId, url_arr) {
+  const deleteProductImageQuery = `delete from ProductImage where product_id=? and url in (${url_arr})`;
+
+  const deleteProductImageRow = await connection.query(
+    deleteProductImageQuery,
+    productId
+  );
+  return deleteProductImageRow[0];
+}
+
 module.exports = {
   selectProductDetail,
   selectProductDetailImages,
@@ -247,4 +322,10 @@ module.exports = {
   selectPopularProductList,
   selectLikeInfo,
   selectRecommandProducts,
+  checkStore,
+  insertProduct,
+  insertProductImage,
+  updateProduct,
+  insertOnlyProductImage,
+  deleteProductImage,
 };

@@ -21,4 +21,34 @@ module.exports = function (app) {
 
   // 상품 좋아요&취소
   app.post("/opshop/products/liked", jwtMiddleware, product.postLiked);
+
+  /**
+   * 상점의 상품 등록
+   */
+  app.post(
+    "/opshop/stores/:storeId/product-register",
+    jwtMiddleware,
+    product.registerProduct
+  );
+
+  // 상품 수정
+  app.post(
+    "/opshop/stores/:storeId/product-edit/:productId",
+    jwtMiddleware,
+    product.editProduct
+  );
+
+  // 상품 이미지 추가
+  app.post(
+    "/opshop/stores/:storeId/product-image-add/:productId",
+    jwtMiddleware,
+    product.insertProductImage
+  );
+
+  // 상품 이미지 제거
+  app.post(
+    "/opshop/stores/:storeId/product-image-delete/:productId",
+    jwtMiddleware,
+    product.deleteProductImage
+  );
 };

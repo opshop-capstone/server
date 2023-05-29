@@ -17,6 +17,4 @@ module.exports = function (app) {
 
   //주문 취소
   app.post("/opshop/orders/:orderId/cancel", jwtMiddleware, user.orderCancel);
-
-  //주문 내역 조회
 };

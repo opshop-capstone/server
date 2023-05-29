@@ -132,6 +132,50 @@ async function insertSubscribe(connection, userId, storeId) {
   ]);
   return insertSubscribeRow[0];
 }
+
+async function checkOwner(connection, userId) {
+  const checkOwnerQuery = `
+      -- 상점 주인 체크
+      select id
+      from User
+      where id=? and type like 'OWNER' 
+  `;
+  const checkOwnerRow = await connection.query(checkOwnerQuery, userId);
+  return checkOwnerRow[0];
+}
+
+async function insertStore(connection, insertStoreParams) {
+  const insertStoreQuery = `
+      -- 상점 추가 (등록)
+      insert into Store ( owner_id, store_name, content, tel, email, bussiness_code, store_image_url) values (?,?,?,?,?,?,?)
+  `;
+  const insertStoreRow = await connection.query(
+    insertStoreQuery,
+    insertStoreParams
+  );
+  return insertStoreRow[0];
+}
+
+async function updateStore(
+  connection,
+  owner_id,
+  store_name,
+  content,
+  tel,
+  email,
+  store_image_url
+) {
+  const updateStoreQuery = `
+      -- 상점 수정
+      update Store set store_name=if(${store_name}="",store_name,${store_name}), content=if(${content}="",content,${content}),
+                       tel=if(${tel}="",tel,${tel}), email=if(${email}="",email,${email}),
+                       ,store_image_url=if(${store_image_url}="",store_image_url,${store_image_url}) 
+                   where owner_id=?;
+  `;
+  const updateStoreRow = await connection.query(updateStoreQuery, owner_id);
+  return updateStoreRow[0];
+}
+
 module.exports = {
   selectStoreProducts,
   selectStoreReviews,
@@ -142,4 +186,7 @@ module.exports = {
   deleteSubscribe,
   insertSubscribe,
   selectStoreList,
+  checkOwner,
+  insertStore,
+  updateStore,
 };
