@@ -247,6 +247,19 @@ async function checkStore(connection, userId, storeId) {
   return checkStoreRow[0];
 }
 
+async function checkProduct(connection, storeId, productId) {
+  const checkProductQuery = `
+    select S.id
+    from Store S join Product P on S.id=P.store_id
+    where S.id=? and P.id=?
+    `;
+  const checkProducgtRow = await connection.query(checkProductQuery, [
+    storeId,
+    productId,
+  ]);
+  return checkProducgtRow[0];
+}
+
 async function insertProduct(connection, insertProductParams) {
   const insertProductQuery = `
       insert into Product (store_id,title,price,content,category_id,size) values(?,?,?,?,?,?);
@@ -312,6 +325,14 @@ async function deleteProductImage(connection, productId, url_arr) {
   return deleteProductImageRow[0];
 }
 
+async function deleteProduct(connection, productId) {
+  const deleteProductQuery = `
+  -- 상품 제거시 상품 이미지 자동 제거
+  delete from Product where id=${productId}`;
+  const deleteProductRow = await connection.query(deleteProductQuery);
+  return deleteProductRow[0];
+}
+
 module.exports = {
   selectProductDetail,
   selectProductDetailImages,
@@ -331,4 +352,6 @@ module.exports = {
   updateProduct,
   insertOnlyProductImage,
   deleteProductImage,
+  checkProduct,
+  deleteProduct,
 };

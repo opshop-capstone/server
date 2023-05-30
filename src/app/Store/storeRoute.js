@@ -48,4 +48,9 @@ module.exports = function (app) {
   );
 
   // 주문 상품 상태 변경
+  app.post(
+    "/opshop/stores/:storeId/order-update/:orderId",
+    jwtMiddleware,
+    store.storeUpdateOrderStatus
+  );
 };

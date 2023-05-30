@@ -247,3 +247,44 @@ exports.deleteProductImage = async function (
     connection.release();
   }
 };
+
+// 상품 제거
+exports.deleteProduct = async function (userId, storeId, productId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    connection.beginTransaction();
+
+    const checkStore = await productProvider.checkStore(userId, storeId);
+    if (checkStore.length == 0) {
+      return response({
+        isSuccess: false,
+        code: 2000,
+        message: "상점 사장님이 아니세요.",
+      });
+    }
+
+    const checkProduct = await productProvider.checkProduct(storeId, productId);
+    if (checkProduct.length == 0) {
+      return response({
+        isSuccess: false,
+        code: 2000,
+        message: "해당 상점의 상품이 아닙니다.",
+      });
+    }
+
+    const deleteProduct = await productDao.deleteProduct(connection, productId);
+    connection.commit();
+    console.log(deleteProduct);
+    return response({
+      isSuccess: true,
+      code: 1000,
+      message: "상품 제거 성공",
+    });
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - deleteProduct Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};

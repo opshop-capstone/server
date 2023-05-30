@@ -175,3 +175,59 @@ exports.editStore = async function (
     connection.release();
   }
 };
+
+exports.updateOrderStatus = async function (
+  owner_id,
+  storeId,
+  orderId,
+  status
+) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    connection.beginTransaction();
+
+    const checkStore = await storeProvider.checkStore(owner_id, storeId);
+    if (checkStore.length == 0) {
+      return response({
+        isSuccess: false,
+        code: 920,
+        message: "상점 주인 인증 단계를 먼저 거치세요. ",
+      });
+    }
+
+    const checkStoreOrder = await storeProvider.checkStoreOrder(
+      storeId,
+      orderId
+    );
+    if (checkStoreOrder.length == 0) {
+      return response({
+        isSuccess: false,
+        code: 920,
+        message: "해당 상점의 주문이 아닙니다. ",
+      });
+    }
+
+    status = '"' + status + '"';
+    const updateOrderStatus = await storeDao.updateOrderStatus(
+      connection,
+      orderId,
+      status
+    );
+
+    if (updateOrderStatus.changedRows == 0) {
+      return response({
+        isSuccess: false,
+        code: 920,
+        message: "변경된 상태 없음 ",
+      });
+    }
+    connection.commit();
+    return response(baseResponse.SUCCESS);
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - updateOrderStatus Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};

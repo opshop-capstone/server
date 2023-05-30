@@ -315,3 +315,49 @@ exports.storeGetOrderedDetail = async function (req, res) {
     return res.send(response(baseResponse.SUCCESS, getOrderedDetail));
   }
 };
+
+/**
+ * 상점용: 주문 상태 변경
+ */
+exports.storeUpdateOrderStatus = async function (req, res) {
+  const storeId = req.params.storeId;
+  const userId = req.verifiedToken.userId;
+  const orderId = req.params.orderId;
+  const status = req.query.status;
+
+  if (!storeId) {
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 802,
+        message: "상점ID를 입력해주세요.",
+      })
+    );
+  }
+  if (!orderId) {
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 802,
+        message: "주문ID를 입력해주세요.",
+      })
+    );
+  }
+  if (!status) {
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 802,
+        message: "변경할 상태를 입력해주세요.",
+      })
+    );
+  }
+
+  const updateOrderStatus = await storeService.updateOrderStatus(
+    userId,
+    storeId,
+    orderId,
+    status
+  );
+  return res.send(updateOrderStatus);
+};

@@ -278,3 +278,18 @@ exports.deleteProductImage = async function (req, res) {
 
   return res.send(deleteProductImageResult);
 };
+
+//상품 제거
+exports.deleteProduct = async function (req, res) {
+  const userId = req.verifiedToken.userId;
+  const productId = req.params.productId;
+  const storeId = req.params.storeId;
+
+  const deleteProductResult = await productService.deleteProduct(
+    userId,
+    storeId,
+    productId
+  );
+
+  return res.send(deleteProductResult);
+};

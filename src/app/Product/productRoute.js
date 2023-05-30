@@ -51,4 +51,10 @@ module.exports = function (app) {
     jwtMiddleware,
     product.deleteProductImage
   );
+  //상품 제거
+  app.post(
+    "/opshop/stores/:storeId/product-delete/:productId",
+    jwtMiddleware,
+    product.deleteProduct
+  );
 };

@@ -189,6 +189,20 @@ async function checkStore(connection, userId, storeId) {
   return checkStoreRow[0];
 }
 
+async function checkStoreOrder(connection, storeId, orderId) {
+  const checkStoreQuery = `
+    select oi.id
+    from OrderItem oi join Product p on oi.product_id= p.id
+        join Store s on p.store_id=s.id
+    where s.id=? and oi.id=?
+    `;
+  const checkStoreRow = await connection.query(checkStoreQuery, [
+    storeId,
+    orderId,
+  ]);
+  return checkStoreRow[0];
+}
+
 async function selectOrderedListForStore(connection, storeId) {
   const selectOrderedListForStoreQuery = `
   -- 주문된 상품 리스트 확인 
@@ -219,6 +233,16 @@ async function selectOrderedDetailForStore(connection, orderId) {
   );
   return selectOrderedDetailForStoreRow[0];
 }
+
+async function updateOrderStatus(connection, orderId, status) {
+  const updateOrderStatusQuery = `
+  -- 주문된 상품 상세내역
+  update OrderItem set status= ${status} where id=${orderId}
+    
+    `;
+  const updateOrderStatusRow = await connection.query(updateOrderStatusQuery);
+  return updateOrderStatusRow[0];
+}
 module.exports = {
   selectStoreProducts,
   selectStoreReviews,
@@ -235,4 +259,6 @@ module.exports = {
   checkStore,
   selectOrderedListForStore,
   selectOrderedDetailForStore,
+  updateOrderStatus,
+  checkStoreOrder,
 };

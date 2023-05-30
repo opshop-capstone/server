@@ -74,6 +74,18 @@ exports.checkStore = async function (userId, storeId) {
   return checkStoreResult;
 };
 
+exports.checkStoreOrder = async function (storeId, orderId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const checkStoreOrderResult = await storeDao.checkStoreOrder(
+    connection,
+    storeId,
+    orderId
+  );
+  connection.release();
+
+  return checkStoreOrderResult;
+};
+
 exports.getOrderedList = async function (storeId) {
   const connection = await pool.getConnection(async (conn) => conn);
   const getOrderedListResult = await storeDao.selectOrderedListForStore(
