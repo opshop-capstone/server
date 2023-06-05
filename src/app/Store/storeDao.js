@@ -66,7 +66,7 @@ async function selectStoreReviewsScore(connection, storeId) {
 async function selectStoreInfo(connection, storeId) {
   const selectStoreInfoQuery = `
   -- 상점 정보
-  select S.id,S.content,S.store_name, S.tel,S.email,S.bussiness_code, SA.road_address, SA.detail_address,SA.zipcode
+  select S.id,S.store_image_url as store_thumbnail,S.content,S.store_name, S.tel,S.email,S.bussiness_code, SA.road_address, SA.detail_address,SA.zipcode
   from Store S join StoreAddress SA on S.id = SA.store_id
   where S.id=? and S.status='ACTIVE';
   `;
