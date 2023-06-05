@@ -17,6 +17,7 @@ exports.insertCartItem = async function (userId, productId) {
     // 상품 상태 확인
     const checkProduct = await cartProvider.checkProduct(productId);
     connection.beginTransaction();
+
     if (checkProduct[0].status != "ACTIVE")
       return errResponse({
         isSuccess: false,
@@ -26,8 +27,10 @@ exports.insertCartItem = async function (userId, productId) {
 
     const cartParams = [userId, productId];
     // 장바구니에 있는 상품인지 확인
+
     const checkCartItem = await cartProvider.checkCartItem(cartParams);
-    if (checkCartItem.length > 0) {
+    console.log(checkCartItem.length);
+    if (checkCartItem.length != 0) {
       return errResponse({
         isSuccess: false,
         code: 7002,
@@ -37,7 +40,6 @@ exports.insertCartItem = async function (userId, productId) {
 
     const insertCartResult = await cartDao.insertCart(connection, cartParams);
     connection.commit();
-
     return response(baseResponse.SUCCESS);
   } catch (err) {
     connection.rollback();

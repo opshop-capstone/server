@@ -15,6 +15,7 @@ exports.getCartItem = async function (userId) {
 exports.checkProduct = async function (productId) {
   const connection = await pool.getConnection(async (conn) => conn);
   const checkProduct = await cartDao.checkProduct(connection, productId);
+  connection.release();
 
   return checkProduct;
 };
@@ -22,6 +23,7 @@ exports.checkProduct = async function (productId) {
 exports.checkCartItem = async function (cartParams) {
   const connection = await pool.getConnection(async (conn) => conn);
   const checkCart = await cartDao.checkCart(connection, cartParams);
+  connection.release();
 
   return checkCart;
 };
