@@ -206,7 +206,7 @@ async function checkStoreOrder(connection, storeId, orderId) {
 async function selectOrderedListForStore(connection, storeId) {
   const selectOrderedListForStoreQuery = `
   -- 주문된 상품 리스트 확인 
-    select OI.id as order_id,OI.status as order_status,date_format(OI.create_at,'%Y-%m-%d %H:%i') as order_date,U.name as orderer , P.id as product_id , P.title,P.price
+    select OI.id as order_id,OI.status as order_status,date_format(OI.create_at,'%Y-%m-%d %H:%i') as order_date,U.name as orderer , P.id as product_id , P.title,OI.price
     from OrderItem OI join Product P on OI.product_id = P.id join Store S on P.store_id = S.id join User U on OI.user_id = U.id
     where S.id=?
     order by order_date desc;
