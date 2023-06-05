@@ -96,3 +96,23 @@ exports.getMyOrderList = async function (req, res) {
   const getMyOrderList = await mypageProvider.getMyOrderList(userId);
   return res.send(response(baseResponse.SUCCESS, getMyOrderList));
 };
+
+/**
+ * 주문 취소
+ */
+exports.orderCancel = async function (req, res) {
+  const userId = req.verifiedToken.userId;
+  const orderId = req.params.orderId;
+  if (!orderId) {
+    return res.send(
+      response({
+        isSuccess: false,
+        code: 102,
+        message: "주문 ID 입력해주세요.",
+      })
+    );
+  }
+
+  const cancelOrder = await mypageService.cancelOrder(userId, orderId);
+  return res.send(cancelOrder);
+};

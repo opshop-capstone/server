@@ -23,4 +23,11 @@ module.exports = function (app) {
 
   //나의 주문 내역 - 만들어!
   app.get("/opshop/mypage/orders", jwtMiddleware, mypage.getMyOrderList);
+
+  //주문 취소
+  app.post(
+    "/opshop/mypage/order-cancel/:orderId",
+    jwtMiddleware,
+    mypage.orderCancel
+  );
 };

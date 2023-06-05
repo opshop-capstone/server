@@ -111,6 +111,18 @@ async function selectMyOrderList(connection, userId) {
   );
   return selectMyOrderListRow[0];
 }
+
+async function cancelStatusOrder(connection, [userId, orderId]) {
+  const cancelStatusOrderQuery = `
+        -- 주문한 상품 상태 변경 -> 취소중
+        update OrderItem set status='CANCELING' where user_id=? and id=?;`;
+  const cancelStatusOrderRow = await connection.query(cancelStatusOrderQuery, [
+    userId,
+    orderId,
+  ]);
+  return cancelStatusOrderRow[0];
+}
+
 module.exports = {
   selectMypage,
   selectUserAddress,
@@ -120,4 +132,5 @@ module.exports = {
   selectMyReviewList,
   selectMyDetailReview,
   selectMyOrderList,
+  cancelStatusOrder,
 };

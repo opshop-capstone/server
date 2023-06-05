@@ -45,3 +45,29 @@ exports.postMyAddress = async function (
     connection.release();
   }
 };
+
+exports.cancelOrder = async function (userId, orderId) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    connection.beginTransaction();
+
+    const cancelOrderResult = await mypageDao.cancelStatusOrder(connection, [
+      userId,
+      orderId,
+    ]);
+    console.log(cancelOrderResult);
+    connection.commit();
+
+    return response({
+      isSuccess: true,
+      code: 1000,
+      message: "주문 취소 요청 성공",
+    });
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - cancelOrder Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
