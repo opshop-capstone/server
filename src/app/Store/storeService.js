@@ -207,20 +207,17 @@ exports.updateOrderStatus = async function (
       });
     }
 
-    status = '"' + status + '"';
+    console.log(status);
     const updateOrderStatus = await storeDao.updateOrderStatus(
       connection,
       orderId,
       status
     );
-
-    if (updateOrderStatus.changedRows == 0) {
-      return response({
-        isSuccess: false,
-        code: 920,
-        message: "변경된 상태 없음 ",
-      });
+    if (status == "CANCELED") {
+      const updateProductStatusToACTIVE =
+        await storeDao.updateProductStatusToACTIVE(connection, orderId, status);
     }
+
     connection.commit();
     return response(baseResponse.SUCCESS);
   } catch (err) {

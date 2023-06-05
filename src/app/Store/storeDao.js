@@ -235,13 +235,26 @@ async function selectOrderedDetailForStore(connection, orderId) {
 }
 
 async function updateOrderStatus(connection, orderId, status) {
+  const string_status = '"' + status + '"';
   const updateOrderStatusQuery = `
   -- 주문된 상품 상세내역
-  update OrderItem set status= ${status} where id=${orderId}
+  update OrderItem set status= ${string_status} where id=${orderId}
     
     `;
   const updateOrderStatusRow = await connection.query(updateOrderStatusQuery);
   return updateOrderStatusRow[0];
+}
+
+async function updateProductStatusToACTIVE(connection, orderId) {
+  const updateProductStatusToACTIVEQuery = `
+    -- 주문된 상품 상태변경
+    update Product set status= 'ACTIVE' where id = (select product_id from OrderItem where id=${orderId})
+    
+    `;
+  const updateProductStatusToACTIVERow = await connection.query(
+    updateProductStatusToACTIVEQuery
+  );
+  return updateProductStatusToACTIVERow[0];
 }
 module.exports = {
   selectStoreProducts,
@@ -261,4 +274,5 @@ module.exports = {
   selectOrderedDetailForStore,
   updateOrderStatus,
   checkStoreOrder,
+  updateProductStatusToACTIVE,
 };

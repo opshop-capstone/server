@@ -352,7 +352,7 @@ exports.storeUpdateOrderStatus = async function (req, res) {
       })
     );
   }
-
+  console.log(status);
   const updateOrderStatus = await storeService.updateOrderStatus(
     userId,
     storeId,
