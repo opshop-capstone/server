@@ -58,7 +58,7 @@ async function selectSubscribeList(connection, userId) {
         -- 구독 상점 목록
         select LS.store_id ,S.store_name,S.store_image_url
         from LikedStore as LS join Store S on LS.store_id = S.id
-        where LS.user_id=? and LS.status='ACTIVE' and s.status='ACTIVE';
+        where LS.user_id=? and LS.status='ACTIVE' and S.status='ACTIVE';
          `;
   const selectSubscribeListRow = await connection.query(
     selectSubscribeListQuery,
