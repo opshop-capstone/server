@@ -98,12 +98,11 @@ async function selectMyDetailReview(connection, reviewId) {
 async function selectMyOrderList(connection, userId) {
   const selectMyOrderListQuery = `
         -- 주문 내역 목록 조회 - 주소랑 연락처 
-        select OI.id as order_id, OI.product_id ,U.name as orderer, UA.name as address_name,concat(UA.road_address,UA.detail_address) as address , P.title as product_name, OI.price,date_format(OI.update_at,'%Y/%m/%d') as date ,(case when OI.status='PREPARE' then '배송준비중' when OI.status='DELIVERING' then '배송중'
-        when OI.status='DELIVERED' then '배송완료' when OI.status='CANCELING' then '주문 취소중' when OI.status='CANCELED' then '취소완료' else '확인중' end) as status
+        select OI.id as order_id, OI.product_id ,U.name as orderer, UA.name as address_name,concat(UA.road_address,UA.detail_address) as address , P.title as product_name, OI.price,date_format(OI.update_at,'%Y/%m/%d') as date , OI.status as status
         from OrderItem OI join User U on OI.user_id = U.id
         join Product P on OI.product_id = P.id
         join UserAddress as UA on UA.id = OI.address_id 
-        where OI.user_id=1 
+        where OI.user_id=?
         order by date desc; -- 최신순
            `;
   const selectMyOrderListRow = await connection.query(
