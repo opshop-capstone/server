@@ -36,11 +36,11 @@ exports.insertCartItem = async function (userId, productId) {
         code: 7002,
         message: "장바구니에 동일한 상품이 존재합니다.",
       });
+    } else {
+      const insertCartResult = await cartDao.insertCart(connection, cartParams);
+      connection.commit();
+      return response(baseResponse.SUCCESS);
     }
-
-    const insertCartResult = await cartDao.insertCart(connection, cartParams);
-    connection.commit();
-    return response(baseResponse.SUCCESS);
   } catch (err) {
     connection.rollback();
     logger.error(`App - insertCart Service error\n: ${err.message}`);
