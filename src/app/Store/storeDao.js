@@ -1,19 +1,18 @@
 async function selectStoreList(connection) {
   const selectStoreListQuery = `
-    -- 상점 리스트 조회 - 좋아요 + 구매 많은 순 
-    select S.id, S.store_name,S.store_image_url,S.content,ifnull(purchase.count,0) as purchase_count ,liked.count as like_count
-    from Store as S left join
-    
-    (select S.id as store_id,count(S.id) as count
-    from Store S left join Product P on P.store_id = S.id
-        join OrderItem OI on P.id= OI.product_id
-    group by S.id) as purchase on purchase.store_id = S.id
-    join
-    (select S.id as store_id ,count(LS.id) as count
-    from Store S left join LikedStore LS on S.id = LS.store_id
-    where  S.status='ACTIVE'
-    group by LS.store_id) as liked on liked.store_id=S.id
-    order by purchase_count+like_count desc;
+  -- 상점 리스트 조회 - 좋아요 + 구매 많은 순
+  select S.id, S.store_name,S.store_image_url,S.content,ifnull(purchase.count,0) as purchase_count ,ifnull(liked.count,0) as like_count
+  from Store as S left join
+  (select S.id as store_id,ifnull(count(S.id),0) as count
+  from Store S left join Product P on P.store_id = S.id
+      join OrderItem OI on P.id= OI.product_id
+  group by S.id) as purchase on purchase.store_id = S.id
+  left join
+  (select S.id as store_id ,ifnull(count(S.id),0) as count
+  from Store S left join LikedStore LS on S.id = LS.store_id
+  where  S.status='ACTIVE'
+  group by LS.store_id) as liked on liked.store_id=S.id
+  order by purchase_count+like_count desc
 
   ;`;
   const selectStoreListRow = await connection.query(selectStoreListQuery);
