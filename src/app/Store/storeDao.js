@@ -65,7 +65,7 @@ async function selectStoreReviewsScore(connection, storeId) {
 async function selectStoreInfo(connection, storeId) {
   const selectStoreInfoQuery = `
   -- 상점 정보
-  select S.id,S.store_image_url as store_thumbnail,S.content,S.store_name, S.tel,S.email,S.bussiness_code, SA.road_address, SA.detail_address,SA.zipcode
+  select S.id,S.store_image_url as store_thumbnail,S.content,S.store_name, S.tel,S.email,S.bussiness_code, ifnull(SA.road_address,'주소') as road_address , ifnull(SA.detail_address,'상세 주소') as detail_address, ifnull(SA.zipcode,'우편 번호') as zipcode
   from Store S join StoreAddress SA on S.id = SA.store_id
   where S.id=? and S.status='ACTIVE';
   `;
