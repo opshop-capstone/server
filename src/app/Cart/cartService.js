@@ -14,9 +14,9 @@ const { connect } = require("http2");
 exports.insertCartItem = async function (userId, productId) {
   const connection = await pool.getConnection(async (conn) => conn);
   try {
+    connection.beginTransaction();
     // 상품 상태 확인
     const checkProduct = await cartProvider.checkProduct(productId);
-    connection.beginTransaction();
 
     if (checkProduct[0].status != "ACTIVE")
       return errResponse({
