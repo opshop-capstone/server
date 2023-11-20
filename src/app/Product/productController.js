@@ -77,10 +77,17 @@ exports.recommandProducts = async function (req, res) {
   // userIdx에게 count개의 pose추천, User의 학습 데이터가 없으면 (좋아요가 없는 유저) 랜덤 추천
   let getRecommendResult = cf.recommendToUser(userId, 10);
   let productList = [];
+  if (getRecommendResult.length == 0) {
+    initalItem = await productProvider.getPopularProductList();
 
-  //추천 상품 ID 리스트 생성
-  for (let i = 0; i < getRecommendResult.length; i++) {
-    productList.push(parseInt(getRecommendResult[i].itemId));
+    for (let i = 0; i < 3; i++) {
+      productList.push(initalItem[i].product_id);
+    }
+  } else {
+    //추천 상품 ID 리스트 생성
+    for (let i = 0; i < getRecommendResult.length; i++) {
+      productList.push(parseInt(getRecommendResult[i].itemId));
+    }
   }
 
   //추천 상품 ID 리스트로 상품 정보 가져옴

@@ -6,13 +6,13 @@ async function selectStoreList(connection) {
   (select S.id as store_id,ifnull(count(S.id),0) as count
   from Store S left join Product P on P.store_id = S.id
       join OrderItem OI on P.id= OI.product_id
-  group by S.id) as purchase on purchase.store_id = S.id
+  group by S.id ) as purchase on purchase.store_id = S.id
   left join
   (select S.id as store_id ,ifnull(count(S.id),0) as count
   from Store S left join LikedStore LS on S.id = LS.store_id
   where  S.status='ACTIVE'
-  group by LS.store_id) as liked on liked.store_id=S.id
-  order by purchase_count+like_count desc
+  group by S.id) as liked on liked.store_id=S.id
+  order by purchase_count+like_count desc;
 
   ;`;
   const selectStoreListRow = await connection.query(selectStoreListQuery);
