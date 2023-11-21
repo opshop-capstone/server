@@ -66,8 +66,8 @@ async function selectUserAccount(connection, email) {
   );
   return selectUserAccountRow[0];
 }
-/**
- * async function insertOrders(connection, [userId, total_price, address_id]) {
+
+async function insertOrders(connection, [userId, total_price, address_id]) {
   const insertOrdersQuery = `
       -- 상품 주문
       insert into Orders (user_id,total_price,address_id) values (?,?,?);
@@ -78,7 +78,7 @@ async function selectUserAccount(connection, email) {
     address_id,
   ]);
   return insertOrdersRow[0];
-} */
+}
 
 async function insertOrderItems(
   connection,
@@ -150,7 +150,7 @@ module.exports = {
   insertUserInfo,
   selectUserPassword,
   selectUserAccount,
-  //insertOrders,
+  insertOrders,
   insertOrderItems,
   checkItemStatus,
   updateProductStatusToSOLD,
