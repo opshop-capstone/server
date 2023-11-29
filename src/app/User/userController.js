@@ -101,8 +101,8 @@ let item_list, price_list;
 
 //결제 API
 exports.payment = async function (req, res) {
-  // var clientIp = requestIp.getClientIp(req);
-  // clientIp = clientIp.slice(0, -1);
+  var clientIp = requestIp.getClientIp(req);
+  clientIp = clientIp.slice(7, -1);
   console.log(clientIp);
   userId = req.verifiedToken.userId; // jwt 토큰에서 받아오는 userId
   itemId = req.query.itemId; //상품ID like [1,2,3]
@@ -141,9 +141,9 @@ exports.payment = async function (req, res) {
     // approval_url: "http://opshop.shop:3000/opshop/payment/approve",
     // fail_url: "http://opshop.shop:3000/opshop/payment/fail",
     // cancel_url: "http://localhost:3000/opshop/payment/cancel",
-    approval_url: `http://192.168.0.2:3000/opshop/payment/approve`,
-    fail_url: `http://192.168.0.2:3000/opshop/payment/fail`,
-    cancel_url: `http://192.168.0.2:3000/opshop/payment/cancel`,
+    approval_url: `http://${clientIp}:3000/opshop/payment/approve`,
+    fail_url: `http://${clientIp}:3000/opshop/payment/fail`,
+    cancel_url: `http://${clientIp}:3000/opshop/payment/cancel`,
   };
 
   let options = {
