@@ -12,8 +12,10 @@ const Cache = require("memory-cache");
 const CryptoJS = require("crypto-js");
 
 const crypto = require("crypto");
+const requestIp = require("request-ip");
 
 const request = require("request");
+const { cli } = require("winston/lib/winston/config");
 
 /**
  * API No. 1
@@ -99,6 +101,9 @@ let item_list, price_list;
 
 //결제 API
 exports.payment = async function (req, res) {
+  var clientIp = requestIp.getClientIp(req);
+  clientIp = clientIp.slice(0, -1);
+  console.log(clientIp);
   userId = req.verifiedToken.userId; // jwt 토큰에서 받아오는 userId
   itemId = req.query.itemId; //상품ID like [1,2,3]
   addressId = req.query.addressId; //고객이 설정한 address
@@ -133,12 +138,12 @@ exports.payment = async function (req, res) {
     total_amount: `${total_price}`,
     vat_amount: 0,
     tax_free_amount: 0,
-    approval_url: "http://opshop.shop:3000/opshop/payment/approve",
-    fail_url: "http://opshop.shop:3000/opshop/payment/fail",
-    cancel_url: "http://localhost:3000/opshop/payment/cancel",
-    // approval_url: "http://localhost:3000/opshop/payment/approve",
-    // fail_url: "http://localhost:3000/opshop/payment/fail",
+    // approval_url: "http://opshop.shop:3000/opshop/payment/approve",
+    // fail_url: "http://opshop.shop:3000/opshop/payment/fail",
     // cancel_url: "http://localhost:3000/opshop/payment/cancel",
+    approval_url: `http://${clientIp}:3000/opshop/payment/approve`,
+    fail_url: `http://${clientIp}:3000/opshop/payment/fail`,
+    cancel_url: `http://${clientIp}:3000/opshop/payment/cancel`,
   };
 
   let options = {
@@ -157,6 +162,7 @@ exports.payment = async function (req, res) {
       next_redirect_app_url = JSON.parse(body).next_redirect_app_url;
       tid = JSON.parse(body).tid;
       console.log(userId, item_list, addressId, quantity, price_list);
+      console.log(next_redirect_app_url);
       return res.send(next_redirect_app_url); // redirect 하는 코드
     } else {
       console.log(error);
